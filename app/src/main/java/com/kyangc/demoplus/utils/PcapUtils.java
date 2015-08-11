@@ -23,6 +23,7 @@ import fr.bmartel.pcapdecoder.utils.UtilFunctions;
 public class PcapUtils {
 
     public static void getSnifferResultList(PcapDecoder decoder) {
+
         System.out.println("##########################################################");
 
         int timestampResolution = 3;
