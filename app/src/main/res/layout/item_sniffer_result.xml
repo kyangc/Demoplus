@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/llContainer"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="20dp"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:weightSum="10">
+
+    <TextView
+        android:id="@+id/tvTime"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="2"
+        android:gravity="left|center_vertical"
+        android:textSize="11sp"/>
+
+    <View
+        android:layout_width="1px"
+        android:layout_height="fill_parent"
+        android:background="@color/black"/>
+
+    <TextView
+        android:id="@+id/tvSrc"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="2.5"
+        android:gravity="left|center_vertical"
+        android:textSize="11sp"/>
+
+    <View
+        android:layout_width="1px"
+        android:layout_height="fill_parent"
+        android:background="@color/black"/>
+
+    <TextView
+        android:id="@+id/tvDst"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="2.5"
+        android:gravity="left|center_vertical"
+        android:textSize="11sp"/>
+
+    <View
+        android:layout_width="1px"
+        android:layout_height="fill_parent"
+        android:background="@color/black"/>
+
+    <TextView
+        android:id="@+id/tvType"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:gravity="left|center_vertical"
+        android:textSize="11sp"/>
+
+    <View
+        android:layout_width="1px"
+        android:layout_height="fill_parent"
+        android:background="@color/black"/>
+
+    <TextView
+        android:id="@+id/tvDetail"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_weight="2"
+        android:gravity="left|center_vertical"
+        android:textSize="11sp"/>
+
+</LinearLayout>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/sub_type"
+        android:title="Demos">
+        <menu>
+            <item
+                android:id="@+id/home"
+                android:checkable="true"
+                android:icon="@drawable/ic_home"
+                android:title="Home Page"/>
+            <item
+                android:id="@+id/http_client"
+                android:checkable="true"
+                android:icon="@drawable/ic_connection"
+                android:title="Http/s Demo"/>
+            <item
+                android:id="@+id/sniffer_client"
+                android:checkable="true"
+                android:icon="@drawable/ic_sniffer"
+                android:title="Sniffer Demo"/>
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/sub_other"
+        android:title="Other">
+        <menu>
+            <item
+                android:id="@+id/about"
+                android:checkable="true"
+                android:icon="@drawable/ic_face"
+                android:title="About"/>
+            <item
+                android:id="@+id/setting"
+                android:checkable="true"
+                android:icon="@drawable/ic_setting"
+                android:title="Setting"/>
+            <item
+                android:id="@+id/quit"
+                android:checkable="true"
+                android:icon="@drawable/ic_power"
+                android:title="Quit"/>
+        </menu>
+    </item>
+</menu>

@@ -1,0 +1,86 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context="com.kyangc.demoplus.activities.AboutActivity">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            app:title="About"/>
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/ivAvatar"
+            android:layout_width="130dp"
+            android:layout_height="130dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="30dp"
+            android:src="@drawable/ic_avatar"
+            app:border_color="@color/white"
+            app:border_overlay="true"
+            app:border_width="3dp"
+            />
+
+        <TextView
+            android:id="@+id/tvAppName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ivAvatar"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
+            android:text="Demo+"
+            android:textColor="@color/black"
+            android:textSize="24sp"
+            android:textStyle="bold|italic"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvAppName"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:text="Try to build a platform aiming at displaying TECHNIQUES.\nNow we have these features:\n* Material Design\n* Async Http Client\n* EvnetBus\n* ButterKnife\n..."
+            android:textColor="@color/light_black"
+            android:textSize="14sp"
+            android:textStyle="italic"/>
+
+        <TextView
+            android:id="@+id/tvContact"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:text="kyangc@gmail.com\nblog.kyangcis.me"
+            android:textColor="@color/light_black"
+            android:textSize="12sp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/tvContact"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="5dp"
+            android:text="KYANGC!"
+            android:textSize="15sp"
+            android:textStyle="bold|italic"/>
+    </RelativeLayout>
+</LinearLayout>
