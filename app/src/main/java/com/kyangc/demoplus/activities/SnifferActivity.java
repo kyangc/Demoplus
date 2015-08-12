@@ -43,6 +43,7 @@ import java.util.concurrent.TimeoutException;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.trinea.android.common.util.FileUtils;
+import cn.trinea.android.common.util.ShellUtils;
 import fr.bmartel.pcapdecoder.PcapDecoder;
 
 public class SnifferActivity extends AppCompatActivity implements View.OnClickListener {
@@ -330,7 +331,7 @@ public class SnifferActivity extends AppCompatActivity implements View.OnClickLi
         return new AsyncTask() {
             @Override
             protected Object doInBackground(Object[] params) {
-                return RootShell.isAccessGiven();
+                return ShellUtils.checkRootPermission() || RootShell.isAccessGiven();
             }
 
             @Override

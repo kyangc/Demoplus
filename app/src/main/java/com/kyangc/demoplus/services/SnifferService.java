@@ -13,6 +13,7 @@ import com.stericson.RootShell.execution.Command;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.concurrent.TimeoutException;
 
 import cn.trinea.android.common.util.ShellUtils;
@@ -84,7 +85,13 @@ public class SnifferService extends Service {
     }
 
     private String getStorageName() {
-        return PCAPNG_FILE_NAME + System.currentTimeMillis() + PCAPNG_FILE_SUFFIX;
+        Calendar day = Calendar.getInstance();
+        String date = (day.get(Calendar.MONTH) + 1) + "-"
+                + day.get(Calendar.DAY_OF_MONTH) + "_"
+                + day.get(Calendar.HOUR_OF_DAY) + ":"
+                + day.get(Calendar.MINUTE) + ":"
+                + day.get(Calendar.SECOND);
+        return PCAPNG_FILE_NAME + date + PCAPNG_FILE_SUFFIX;
     }
 
     private Command getPrepareTcpdumpCommand() {
