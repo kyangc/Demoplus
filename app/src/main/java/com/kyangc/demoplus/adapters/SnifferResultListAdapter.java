@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.kyangc.demoplus.R;
@@ -66,6 +67,14 @@ public class SnifferResultListAdapter extends RecyclerView.Adapter<SnifferResult
                     onClickListener.onEmailClick(entity.fileName, entity.filePath);
             }
         });
+        holder.rlContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (onClickListener != null) {
+                    onClickListener.onItemClick(entity.filePath);
+                }
+            }
+        });
     }
 
     @Override
@@ -82,6 +91,8 @@ public class SnifferResultListAdapter extends RecyclerView.Adapter<SnifferResult
         void onEmailClick(String fileName, String filePath);
 
         void onDeleteClick(String filePath);
+
+        void onItemClick(String filePath);
     }
 
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
@@ -92,6 +103,8 @@ public class SnifferResultListAdapter extends RecyclerView.Adapter<SnifferResult
         ImageView ivEmail;
         @Bind(R.id.ivDelete)
         ImageView ivDelete;
+        @Bind(R.id.rlContainer)
+        RelativeLayout rlContainer;
 
         public ItemViewHolder(View itemView) {
             super(itemView);

@@ -30,12 +30,12 @@ import com.kyangc.demoplus.services.SnifferService;
 import com.kyangc.demoplus.utils.EmailUtils;
 import com.kyangc.demoplus.utils.FilesUtils;
 import com.kyangc.demoplus.utils.L;
-import com.kyangc.demoplus.utils.PcapUtils;
 import com.stericson.RootShell.RootShell;
 import com.stericson.RootShell.exceptions.RootDeniedException;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -44,7 +44,6 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.trinea.android.common.util.FileUtils;
 import cn.trinea.android.common.util.ShellUtils;
-import fr.bmartel.pcapdecoder.PcapDecoder;
 
 public class SnifferActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -75,6 +74,8 @@ public class SnifferActivity extends AppCompatActivity implements View.OnClickLi
     TextView tvHint;
     @Bind(R.id.slResult)
     SwipeRefreshLayout slResult;
+    @Bind(R.id.rlNoRecord)
+    RelativeLayout rlNoRecord;
 
     boolean isRooted = false;
     boolean isRootRunning = false;
@@ -87,6 +88,32 @@ public class SnifferActivity extends AppCompatActivity implements View.OnClickLi
     public static void start(Context context) {
         Intent i = new Intent(context, SnifferActivity.class);
         context.startActivity(i);
+    }
+
+    private static AsyncTask getUpdateListTask() {
+        return new AsyncTask() {
+
+            WeakReference<SnifferActivity> context;
+
+            @Override
+            protected Object doInBackground(Object[] params) {
+                context = new WeakReference<>((SnifferActivity) params[0]);
+                context.get().displayList.clear();
+                List<File> paths = FilesUtils.getListFiles(new File(DATA_STORAGE_DIR));
+                for (File file : paths) {
+                    context.get().displayList.add(new SnifferDataEntity(file.getAbsolutePath(), file.getName()));
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Object o) {
+                super.onPostExecute(o);
+                context.get().adapter.notifyDataSetChanged();
+                context.get().slResult.setRefreshing(false);
+                context.get().displayBackground(context.get().displayList == null || context.get().displayList.size() <= 0);
+            }
+        };
     }
 
     @Override
@@ -236,16 +263,16 @@ public class SnifferActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
+    private void displayBackground(boolean isShown) {
+        rlNoRecord.setVisibility(isShown ? View.VISIBLE : View.GONE);
+    }
+
     private void checkRoot() {
         getCheckRootTask().execute();
     }
 
-    private void checkRestoredData() {
-        getCheckDataTask().execute();
-    }
-
     private void updateList() {
-        getUpdateListTask().execute();
+        getUpdateListTask().execute(context);
     }
 
     private SnifferResultListAdapter.OnClickListener getListItemOnClickListener() {
@@ -286,12 +313,17 @@ public class SnifferActivity extends AppCompatActivity implements View.OnClickLi
                                     }
                                     if (location != -1) {
                                         displayList.remove(location);
-                                        adapter.notifyDataSetChanged();
+                                        updateList();
                                     }
                                 }
                             }
                         })
                         .show();
+            }
+
+            @Override
+            public void onItemClick(String filePath) {
+                SnifferDataActivity.start(context, filePath);
             }
         };
     }
@@ -350,60 +382,6 @@ public class SnifferActivity extends AppCompatActivity implements View.OnClickLi
                 displayProgress(false, getString(R.string.requiring_root_access));
                 displayRootStatus(isRooted ? ROOT_STATUS_ROOTED : ROOT_STATUS_UNROOTED);
                 if (isRooted) initService();
-            }
-        };
-    }
-
-    private AsyncTask getCheckDataTask() {
-        return new AsyncTask() {
-
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                displayProgress(true, getString(R.string.check_restored_data));
-            }
-
-            @Override
-            protected Object doInBackground(Object[] params) {
-                if (snifferBinder.getPcapFilePath() == null) {
-                    return null;
-                }
-                PcapDecoder pcapNgDecoder = null;
-                try {
-                    pcapNgDecoder = new PcapDecoder(FilesUtils.toByteArray(snifferBinder.getPcapFilePath()));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                pcapNgDecoder.decode();
-                PcapUtils.getSnifferResultList(pcapNgDecoder);
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Object o) {
-                super.onPostExecute(o);
-                displayProgress(false, getString(R.string.check_restored_data));
-            }
-        };
-    }
-
-    private AsyncTask getUpdateListTask() {
-        return new AsyncTask() {
-            @Override
-            protected Object doInBackground(Object[] params) {
-                displayList.clear();
-                List<File> paths = FilesUtils.getListFiles(new File(DATA_STORAGE_DIR));
-                for (File file : paths) {
-                    displayList.add(new SnifferDataEntity(file.getAbsolutePath(), file.getName()));
-                }
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Object o) {
-                super.onPostExecute(o);
-                adapter.notifyDataSetChanged();
-                slResult.setRefreshing(false);
             }
         };
     }

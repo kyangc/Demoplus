@@ -17,6 +17,32 @@
             app:title="Sniffer Demo"/>
     </android.support.design.widget.AppBarLayout>
 
+    <RelativeLayout
+        android:id="@+id/rlNoRecord"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@id/appLayout"
+        android:layout_marginBottom="60dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:id="@+id/ivLogo"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_centerInParent="true"
+            android:src="@drawable/ic_error"
+            android:tint="@color/light_grey"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/ivLogo"
+            android:layout_centerHorizontal="true"
+            android:text="No Record"
+            android:textColor="@color/light_grey"
+            android:textSize="13sp"/>
+    </RelativeLayout>
+
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/slResult"
         android:layout_width="fill_parent"
@@ -127,8 +153,8 @@
                 android:textColor="@color/white"/>
 
             <com.pnikosis.materialishprogress.ProgressWheel
-                android:layout_width="18dp"
-                android:layout_height="18dp"
+                android:layout_width="13dp"
+                android:layout_height="13dp"
                 android:layout_marginLeft="5dp"
                 android:layout_marginRight="10dp"
                 app:matProg_barColor="@color/white"

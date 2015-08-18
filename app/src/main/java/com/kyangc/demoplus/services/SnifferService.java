@@ -30,7 +30,7 @@ public class SnifferService extends Service {
     public static final int TCPDUMP_RUNNING_TYPE_STORAGE = 1;
 
     public static final String PCAPNG_FILE_NAME = "sniffered_data_";
-    public static final String PCAPNG_FILE_SUFFIX = ".pcapng";
+    public static final String PCAPNG_FILE_SUFFIX = ".pcap";
 
     public String[] prepareTcpCommands =
             {
