@@ -15,10 +15,16 @@ import android.widget.TextView;
 
 import com.kyangc.demoplus.R;
 import com.kyangc.demoplus.adapters.SnifferDataAdapter;
+import com.kyangc.demoplus.pcap.EthernetFrameList;
+import com.kyangc.demoplus.pcap.LibpcapParser;
+import com.kyangc.demoplus.pcap.data.Packet;
+import com.kyangc.demoplus.pcap.header.EthernetHeader;
 import com.kyangc.demoplus.utils.T;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.InvocationTargetException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -82,6 +88,19 @@ public class SnifferDataActivity extends AppCompatActivity {
 
             @Override
             protected Object doInBackground(Object[] params) {
+                File file = new File(context.get().filePath);
+                LibpcapParser parser = null;
+                try {
+                    parser = new LibpcapParser(file);
+                    return parser.parse().getAll(new EthernetFrameList.Filter() {
+                        @Override
+                        public boolean shouldUse(Packet<EthernetHeader> packet) {
+                            return true;
+                        }
+                    });
+                } catch (InvocationTargetException | InstantiationException | IOException | IllegalAccessException e) {
+                    e.printStackTrace();
+                }
                 return null;
             }
 
@@ -94,11 +113,14 @@ public class SnifferDataActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(Object o) {
                 super.onPostExecute(o);
+                EthernetFrameList packets = (EthernetFrameList) o;
                 context.get().displayProgress(false, null);
                 if (o == null) {
                     T.showShort(context.get(), "Error occurred");
                 } else {
-
+                    System.out.println("/** Statistics **/");
+                    System.out.printf("Number of records processed: %d\n", packets.size());
+                    System.out.printf("Average packet length: %d bytes\n", packets.getAveragePacketLength());
                 }
             }
         };
