@@ -19,6 +19,11 @@
                 android:checkable="true"
                 android:icon="@drawable/ic_sniffer"
                 android:title="Sniffer Demo"/>
+            <item
+                android:id="@+id/swipe_demo"
+                android:checkable="true"
+                android:icon="@drawable/ic_list"
+                android:title="Swipe'n Drag Demo"/>
         </menu>
     </item>
 

@@ -48,6 +48,10 @@
             android:name=".activities.SnifferDataActivity"
             android:label="@string/title_activity_sniffer_data" >
         </activity>
+        <activity
+            android:name=".activities.SwipeListItemActivity"
+            android:label="@string/title_activity_swipe_list_item" >
+        </activity>
     </application>
 
 </manifest>

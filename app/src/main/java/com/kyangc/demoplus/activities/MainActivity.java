@@ -162,6 +162,10 @@ public class MainActivity extends AppCompatActivity {
                     case R.id.sniffer_client:
                         SnifferActivity.start(context);
                         break;
+                    case R.id.swipe_demo:
+                        i = new Intent(context, SwipeListItemActivity.class);
+                        context.startActivity(i);
+                        break;
                     case R.id.about:
                         i = new Intent(context, AboutActivity.class);
                         context.startActivity(i);

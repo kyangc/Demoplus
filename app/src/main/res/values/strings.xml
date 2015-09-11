@@ -23,4 +23,5 @@
     <string name="requiring_root_access">Requiring Root Access</string>
     <string name="check_restored_data">Checking Restored Data</string>
     <string name="title_activity_sniffer_data">SnifferDataActivity</string>
+    <string name="title_activity_swipe_list_item">SwipeListItemActivity</string>
 </resources>

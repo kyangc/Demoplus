@@ -33,6 +33,6 @@ public class Packet<H extends Header> implements Data {
 
     @Override
     public String toString() {
-        return header.toString() + '\n' + data;
+        return header.toString() + '\n' + data.toString();
     }
 }

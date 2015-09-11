@@ -31,6 +31,7 @@ public class EthernetFrameList extends ArrayList<Packet<EthernetHeader>> {
      * @return the average length (in bytes) of all of the packets
      */
     public long getAveragePacketLength() {
+        if (size() == 0) return 0;
         long lengthSum = 0;
 
         for (Packet<EthernetHeader> packet : this) {

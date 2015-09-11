@@ -19,6 +19,7 @@ import com.kyangc.demoplus.pcap.EthernetFrameList;
 import com.kyangc.demoplus.pcap.LibpcapParser;
 import com.kyangc.demoplus.pcap.data.Packet;
 import com.kyangc.demoplus.pcap.header.EthernetHeader;
+import com.kyangc.demoplus.utils.L;
 import com.kyangc.demoplus.utils.T;
 
 import java.io.File;
@@ -118,9 +119,9 @@ public class SnifferDataActivity extends AppCompatActivity {
                 if (o == null) {
                     T.showShort(context.get(), "Error occurred");
                 } else {
-                    System.out.println("/** Statistics **/");
-                    System.out.printf("Number of records processed: %d\n", packets.size());
-                    System.out.printf("Average packet length: %d bytes\n", packets.getAveragePacketLength());
+                    for (Packet<EthernetHeader> packet:packets){
+                        L.i(packet.toString());
+                    }
                 }
             }
         };
