@@ -1,5 +1,17 @@
 package com.kyangc.demoplus.activities;
 
+import com.kyangc.demoplus.R;
+import com.kyangc.demoplus.adapters.HttpResultListAdapter;
+import com.kyangc.demoplus.bus.event.HttpRequestEvent;
+import com.kyangc.demoplus.entities.HttpMethodEntity;
+import com.kyangc.demoplus.entities.HttpResultEntity;
+import com.kyangc.demoplus.network.Constants;
+import com.kyangc.demoplus.settings.SettingManager;
+import com.kyangc.demoplus.utils.S;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestParams;
+import com.loopj.android.http.ResponseHandlerInterface;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -15,20 +27,6 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Switch;
 
-import com.kyangc.demoplus.R;
-import com.kyangc.demoplus.adapters.HttpResultListAdapter;
-import com.kyangc.demoplus.bus.event.HttpRequestEvent;
-import com.kyangc.demoplus.entities.HttpMethodEntity;
-import com.kyangc.demoplus.entities.HttpResultEntity;
-import com.kyangc.demoplus.network.Constants;
-import com.kyangc.demoplus.settings.SettingManager;
-import com.kyangc.demoplus.utils.S;
-import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
-import com.loopj.android.http.ResponseHandlerInterface;
-
-import org.apache.http.Header;
-
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -36,6 +34,7 @@ import java.util.Locale;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import cz.msebera.android.httpclient.Header;
 import de.greenrobot.event.EventBus;
 
 /**
@@ -48,27 +47,39 @@ public class HttpClientActivity extends AppCompatActivity {
     public static final String TAG = "HttpClientActivity";
 
     public static final String TITLE = "title";
+
     public static final String TYPE = "type";
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
+
     @Bind(R.id.inputLayout)
     TextInputLayout inputLayout;
+
     EditText editText;
+
     @Bind(R.id.buttonRun)
     Button btRun;
+
     @Bind(R.id.progress)
     ProgressBar progressBar;
+
     @Bind(R.id.switchForHttps)
     Switch aSwitch;
+
     @Bind(R.id.rvResult)
     RecyclerView rvResult;
 
     HttpClientActivity context;
+
     ArrayList<HttpResultEntity> dataSet;
+
     HttpResultListAdapter adapter;
+
     boolean isHttps = true;
+
     String title;
+
     int type;
 
     public static void start(Context context, int type, String title) {
@@ -160,18 +171,21 @@ public class HttpClientActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody,
+                    Throwable error) {
                 displayResult(statusCode, headers, responseBody, error);
                 enableWidgets(true);
             }
 
             @Override
             public void onRetry(int retryNo) {
-                S.show(context, rvResult, String.format("Request is retried, retry no. %d", retryNo), new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                    }
-                });
+                S.show(context, rvResult,
+                        String.format("Request is retried, retry no. %d", retryNo),
+                        new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                            }
+                        });
             }
         };
     }

@@ -1,7 +1,5 @@
 package com.kyangc.demoplus.bus.handler;
 
-import android.content.Context;
-
 import com.kyangc.demoplus.app.DemoApp;
 import com.kyangc.demoplus.bus.event.HttpRequestEvent;
 import com.kyangc.demoplus.entities.HttpMethodEntity;
@@ -10,10 +8,11 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpRequest;
 import com.loopj.android.http.ResponseHandlerInterface;
 
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.HttpContext;
+import android.content.Context;
 
+import cz.msebera.android.httpclient.client.methods.HttpUriRequest;
+import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
+import cz.msebera.android.httpclient.protocol.HttpContext;
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.Subscribe;
 import de.greenrobot.event.ThreadMode;
@@ -37,10 +36,12 @@ public class HttpRequestHandler {
         register();
         client = new AsyncHttpClient() {
             @Override
-            protected AsyncHttpRequest newAsyncHttpRequest(DefaultHttpClient client, HttpContext httpContext,
-                                                           HttpUriRequest uriRequest, String contentType,
-                                                           ResponseHandlerInterface responseHandler, Context context) {
-                return super.newAsyncHttpRequest(client, httpContext, uriRequest, contentType, responseHandler, context);
+            protected AsyncHttpRequest newAsyncHttpRequest(DefaultHttpClient client,
+                    HttpContext httpContext,
+                    HttpUriRequest uriRequest, String contentType,
+                    ResponseHandlerInterface responseHandler, Context context) {
+                return super.newAsyncHttpRequest(client, httpContext, uriRequest, contentType,
+                        responseHandler, context);
             }
         };
     }
@@ -75,7 +76,8 @@ public class HttpRequestHandler {
                 client.patch(DemoApp.getAppContext(), event.url, event.params, event.handler);
                 break;
             case HttpMethodEntity.DELETE:
-                client.delete(DemoApp.getAppContext(), event.url, null, event.params, event.handler);
+                client.delete(DemoApp.getAppContext(), event.url, null, event.params,
+                        event.handler);
                 break;
             default:
                 break;
@@ -83,6 +85,7 @@ public class HttpRequestHandler {
     }
 
     private static class HttpRequestHandlerHolder {
+
         private static final HttpRequestHandler INSTANCE = new HttpRequestHandler();
     }
 }

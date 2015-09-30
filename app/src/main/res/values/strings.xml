@@ -24,4 +24,5 @@
     <string name="check_restored_data">Checking Restored Data</string>
     <string name="title_activity_sniffer_data">SnifferDataActivity</string>
     <string name="title_activity_swipe_list_item">SwipeListItemActivity</string>
+    <string name="title_activity_rx_java">RxJavaActivity</string>
 </resources>
