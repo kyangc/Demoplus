@@ -1,5 +1,10 @@
 package com.kyangc.demoplus.adapters;
 
+import com.kyangc.demoplus.R;
+import com.kyangc.demoplus.internal.ItemTouchHelperAdapter;
+import com.kyangc.demoplus.internal.ItemTouchHelperViewHolder;
+import com.kyangc.demoplus.internal.OnStartDragListener;
+
 import android.content.Context;
 import android.graphics.Color;
 import android.support.v4.view.MotionEventCompat;
@@ -12,11 +17,6 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.kyangc.demoplus.R;
-import com.kyangc.demoplus.internal.ItemTouchHelperAdapter;
-import com.kyangc.demoplus.internal.ItemTouchHelperViewHolder;
-import com.kyangc.demoplus.internal.OnStartDragListener;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,10 +27,13 @@ import butterknife.ButterKnife;
 /**
  * Created by chengkangyang on 九月.11.2015
  */
-public class SwipeAndDragAdapter extends RecyclerView.Adapter<SwipeAndDragAdapter.ItemViewHolder> implements ItemTouchHelperAdapter {
+public class SwipeAndDragAdapter extends RecyclerView.Adapter<SwipeAndDragAdapter.ItemViewHolder>
+        implements ItemTouchHelperAdapter {
 
     private List<String> mItems = new ArrayList<>();
+
     private OnStartDragListener mDragStartListener;
+
     private Context context;
 
     public SwipeAndDragAdapter(Context context, List<String> mItems) {
@@ -45,7 +48,8 @@ public class SwipeAndDragAdapter extends RecyclerView.Adapter<SwipeAndDragAdapte
 
     @Override
     public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_reorder_list, parent, false);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_reorder_list, parent, false);
         ItemViewHolder itemViewHolder = new ItemViewHolder(view);
         return itemViewHolder;
     }
@@ -82,12 +86,15 @@ public class SwipeAndDragAdapter extends RecyclerView.Adapter<SwipeAndDragAdapte
         notifyItemRemoved(position);
     }
 
-    public static class ItemViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
+    public static class ItemViewHolder extends RecyclerView.ViewHolder
+            implements ItemTouchHelperViewHolder {
 
         @Bind(R.id.cvItem)
         RelativeLayout rlContainer;
+
         @Bind(R.id.tvTitle)
         TextView tvTitle;
+
         @Bind(R.id.ivReorder)
         ImageView ivReorder;
 

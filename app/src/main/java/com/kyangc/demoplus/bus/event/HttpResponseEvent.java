@@ -6,6 +6,7 @@ package com.kyangc.demoplus.bus.event;
 public class HttpResponseEvent {
 
     String result;
+
     int statusCode;
 
 }

@@ -1,9 +1,9 @@
 package com.kyangc.demoplus.app;
 
+import com.kyangc.demoplus.bus.handler.HttpRequestHandler;
+
 import android.app.Application;
 import android.content.Context;
-
-import com.kyangc.demoplus.bus.handler.HttpRequestHandler;
 
 /**
  * Created by chengkangyang on 七月.29.2015
@@ -29,6 +29,7 @@ public class DemoApp extends Application {
      * 全局上下文
      */
     private static Context context;
+
     /**
      * 网络请求处理器
      */

@@ -1,5 +1,8 @@
 package com.kyangc.demoplus.adapters;
 
+import com.kyangc.demoplus.R;
+import com.kyangc.demoplus.entities.HttpMethodEntity;
+
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,9 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.kyangc.demoplus.R;
-import com.kyangc.demoplus.entities.HttpMethodEntity;
 
 import java.util.ArrayList;
 
@@ -19,11 +19,15 @@ import butterknife.ButterKnife;
 /**
  * Created by chengkangyang on 七月.30.2015
  */
-public class HttpMethodListAdapter extends RecyclerView.Adapter<HttpMethodListAdapter.ItemViewHolder> {
+public class HttpMethodListAdapter
+        extends RecyclerView.Adapter<HttpMethodListAdapter.ItemViewHolder> {
 
     OnItemClickListener listener;
+
     ArrayList<HttpMethodEntity> list;
+
     Context context;
+
     LayoutInflater inflater;
 
     public HttpMethodListAdapter(Context context, ArrayList<HttpMethodEntity> list) {
@@ -49,14 +53,18 @@ public class HttpMethodListAdapter extends RecyclerView.Adapter<HttpMethodListAd
         holder.rlContainer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (listener != null) listener.OnItemClick(getItemAtPosition(position));
+                if (listener != null) {
+                    listener.OnItemClick(getItemAtPosition(position));
+                }
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        if (list == null) return 0;
+        if (list == null) {
+            return 0;
+        }
         return list.size();
     }
 
@@ -84,6 +92,7 @@ public class HttpMethodListAdapter extends RecyclerView.Adapter<HttpMethodListAd
     }
 
     public interface OnItemClickListener {
+
         void OnItemClick(HttpMethodEntity entity);
     }
 
@@ -91,6 +100,7 @@ public class HttpMethodListAdapter extends RecyclerView.Adapter<HttpMethodListAd
 
         @Bind(R.id.tvName)
         TextView tvName;
+
         @Bind(R.id.rlContainer)
         RelativeLayout rlContainer;
 

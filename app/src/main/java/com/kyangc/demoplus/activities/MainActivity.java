@@ -1,5 +1,13 @@
 package com.kyangc.demoplus.activities;
 
+import com.kyangc.demoplus.R;
+import com.kyangc.demoplus.app.DemoApp;
+import com.kyangc.demoplus.fragments.HttpClientFragment;
+import com.kyangc.demoplus.fragments.MainFragment;
+import com.kyangc.demoplus.settings.SettingManager;
+import com.kyangc.demoplus.utils.S;
+import com.kyangc.demoplus.utils.T;
+
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
@@ -17,14 +25,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 
-import com.kyangc.demoplus.R;
-import com.kyangc.demoplus.app.DemoApp;
-import com.kyangc.demoplus.fragments.HttpClientFragment;
-import com.kyangc.demoplus.fragments.MainFragment;
-import com.kyangc.demoplus.settings.SettingManager;
-import com.kyangc.demoplus.utils.S;
-import com.kyangc.demoplus.utils.T;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
      * Constants
      */
     protected static final int FRAGMENT_TYPE_HOME = 0;
+
     protected static final int FRAGMENT_TYPE_HTTP = 1;
 
     /**
@@ -46,30 +47,44 @@ public class MainActivity extends AppCompatActivity {
      */
     @Bind(R.id.toolbar)
     Toolbar toolbar;
+
     @Bind(R.id.fab)
     FloatingActionButton fab;
+
     @Bind(R.id.navigationView)
     NavigationView navigationView;
+
     @Bind(R.id.drawerLayout)
     DrawerLayout drawerLayout;
+
     @Bind(R.id.mainContainer)
     CoordinatorLayout mainContainer;
+
     @Bind(R.id.appBarLayout)
     AppBarLayout appBarLayout;
+
     @Bind(R.id.flFragmentContainer)
     FrameLayout flFragmentContainer;
+
     ActionBarDrawerToggle drawerToggle;
 
     /**
      * Data
      */
     MainActivity context;
+
     MainFragment mainFragment;
+
     HttpClientFragment httpClientFragment;
+
     Fragment currentFragment;
+
     FragmentManager fragmentManager;
+
     FragmentTransaction fragmentTransaction;
+
     int currentFragmentType = 0;
+
     long firstTimePressBack;
 
     @Override
@@ -117,7 +132,8 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close) {
+        drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open,
+                R.string.close) {
             @Override
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
@@ -148,40 +164,41 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initDrawer() {
-        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(MenuItem menuItem) {
-                Intent i;
-                switch (menuItem.getItemId()) {
-                    case R.id.home:
-                        setFragment(FRAGMENT_TYPE_HOME);
-                        break;
-                    case R.id.http_client:
-                        setFragment(FRAGMENT_TYPE_HTTP);
-                        break;
-                    case R.id.sniffer_client:
-                        SnifferActivity.start(context);
-                        break;
-                    case R.id.swipe_demo:
-                        i = new Intent(context, SwipeListItemActivity.class);
-                        context.startActivity(i);
-                        break;
-                    case R.id.about:
-                        i = new Intent(context, AboutActivity.class);
-                        context.startActivity(i);
-                        break;
-                    case R.id.setting:
-                        i = new Intent(context, SettingsActivity.class);
-                        context.startActivity(i);
-                        break;
-                    case R.id.quit:
-                        finish();
-                        break;
-                }
-                drawerLayout.closeDrawer(navigationView);
-                return true;
-            }
-        });
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        Intent i;
+                        switch (menuItem.getItemId()) {
+                            case R.id.home:
+                                setFragment(FRAGMENT_TYPE_HOME);
+                                break;
+                            case R.id.http_client:
+                                setFragment(FRAGMENT_TYPE_HTTP);
+                                break;
+                            case R.id.sniffer_client:
+                                SnifferActivity.start(context);
+                                break;
+                            case R.id.swipe_demo:
+                                i = new Intent(context, SwipeListItemActivity.class);
+                                context.startActivity(i);
+                                break;
+                            case R.id.about:
+                                i = new Intent(context, AboutActivity.class);
+                                context.startActivity(i);
+                                break;
+                            case R.id.setting:
+                                i = new Intent(context, SettingsActivity.class);
+                                context.startActivity(i);
+                                break;
+                            case R.id.quit:
+                                finish();
+                                break;
+                        }
+                        drawerLayout.closeDrawer(navigationView);
+                        return true;
+                    }
+                });
     }
 
     private void setFragment(int type) {
@@ -197,7 +214,8 @@ public class MainActivity extends AppCompatActivity {
             case FRAGMENT_TYPE_HOME:
                 if (mainFragment == null) {
                     mainFragment = MainFragment.newInstance();
-                    fragmentTransaction.add(R.id.flFragmentContainer, mainFragment, MainFragment.TAG);
+                    fragmentTransaction
+                            .add(R.id.flFragmentContainer, mainFragment, MainFragment.TAG);
                 } else {
                     fragmentTransaction.show(mainFragment);
                 }
@@ -207,7 +225,8 @@ public class MainActivity extends AppCompatActivity {
             case FRAGMENT_TYPE_HTTP:
                 if (httpClientFragment == null) {
                     httpClientFragment = HttpClientFragment.newInstance();
-                    fragmentTransaction.add(R.id.flFragmentContainer, httpClientFragment, HttpClientFragment.TAG);
+                    fragmentTransaction.add(R.id.flFragmentContainer, httpClientFragment,
+                            HttpClientFragment.TAG);
                 } else {
                     fragmentTransaction.show(httpClientFragment);
                 }

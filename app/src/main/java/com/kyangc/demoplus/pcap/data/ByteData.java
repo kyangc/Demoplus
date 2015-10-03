@@ -2,6 +2,7 @@ package com.kyangc.demoplus.pcap.data;
 
 
 public class ByteData implements Data {
+
     private byte[] bytes;
 
     public ByteData(byte[] bytes) {

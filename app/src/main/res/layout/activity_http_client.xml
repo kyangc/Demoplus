@@ -1,9 +1,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:context="com.kyangc.demoplus.activities.HttpClientActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.kyangc.demoplus.activities.HttpClientActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBarLayout"
@@ -15,7 +15,7 @@
             android:id="@+id/toolbar"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            app:title="Http/s Demo"/>
+            app:title="Http/s Demo" />
     </android.support.design.widget.AppBarLayout>
 
     <LinearLayout
@@ -40,7 +40,7 @@
                 android:id="@+id/edittext"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:textColor="@color/black"/>
+                android:textColor="@color/black" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -55,8 +55,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
-                android:text="RUN"
-                />
+                android:text="RUN" />
 
             <!-- Progress-->
             <ProgressBar
@@ -67,7 +66,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_toRightOf="@id/buttonRun"
                 android:indeterminate="true"
-                android:visibility="gone"/>
+                android:visibility="gone" />
 
             <!-- Https Toggle-->
             <RelativeLayout
@@ -87,7 +86,7 @@
                     android:text="HTTPS"
                     android:textColor="@color/black"
                     android:textSize="14sp"
-                    android:textStyle="bold"/>
+                    android:textStyle="bold" />
 
                 <Switch
                     android:id="@+id/switchForHttps"
@@ -95,7 +94,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="10dp"
-                    android:layout_toRightOf="@id/tvHttps"/>
+                    android:layout_toRightOf="@id/tvHttps" />
             </RelativeLayout>
         </RelativeLayout>
     </LinearLayout>
@@ -107,7 +106,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/llControlPanel"
         android:layout_marginTop="10dp"
-        android:background="#fefefe"/>
+        android:background="#fefefe" />
 
     <!-- Shadow-->
     <View
@@ -115,5 +114,5 @@
         android:layout_height="5dp"
         android:layout_below="@id/llControlPanel"
         android:layout_marginTop="10dp"
-        android:background="@drawable/shadow"/>
+        android:background="@drawable/shadow" />
 </RelativeLayout>

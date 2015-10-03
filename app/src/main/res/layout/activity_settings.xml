@@ -1,10 +1,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              tools:context="com.kyangc.demoplus.activities.SettingsActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.kyangc.demoplus.activities.SettingsActivity">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="fill_parent"
@@ -15,7 +15,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@color/blue"
-            app:title="Settings"/>
+            app:title="Settings" />
     </android.support.design.widget.AppBarLayout>
 
     <ScrollView
@@ -35,7 +35,7 @@
                 android:layout_marginTop="15dp"
                 android:text="Home Page"
                 android:textColor="@color/grey"
-                android:textSize="11sp"/>
+                android:textSize="11sp" />
 
             <RelativeLayout
                 android:layout_width="fill_parent"
@@ -47,7 +47,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="20dp"
                     android:text="Display FAB"
-                    android:textSize="15sp"/>
+                    android:textSize="15sp" />
 
                 <Switch
                     android:id="@+id/switchButton"
@@ -56,7 +56,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="20dp"
-                    android:checked="false"/>
+                    android:checked="false" />
 
                 <View
                     android:layout_width="fill_parent"
@@ -64,7 +64,7 @@
                     android:layout_alignParentBottom="true"
                     android:layout_marginLeft="15dp"
                     android:layout_marginRight="15dp"
-                    android:background="@color/light_blue"/>
+                    android:background="@color/light_blue" />
             </RelativeLayout>
 
             <TextView
@@ -74,7 +74,7 @@
                 android:layout_marginTop="25dp"
                 android:text="Http Client Demo"
                 android:textColor="@color/grey"
-                android:textSize="11sp"/>
+                android:textSize="11sp" />
 
             <RelativeLayout
                 android:layout_width="fill_parent"
@@ -86,7 +86,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="20dp"
                     android:text="Https First"
-                    android:textSize="15sp"/>
+                    android:textSize="15sp" />
 
                 <Switch
                     android:id="@+id/httpsSwitch"
@@ -95,7 +95,7 @@
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
                     android:layout_marginRight="20dp"
-                    android:checked="false"/>
+                    android:checked="false" />
 
                 <View
                     android:layout_width="fill_parent"
@@ -103,7 +103,7 @@
                     android:layout_alignParentBottom="true"
                     android:layout_marginLeft="15dp"
                     android:layout_marginRight="15dp"
-                    android:background="@color/light_blue"/>
+                    android:background="@color/light_blue" />
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>

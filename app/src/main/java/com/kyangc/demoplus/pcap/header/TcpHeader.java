@@ -1,6 +1,7 @@
 package com.kyangc.demoplus.pcap.header;
 
 public class TcpHeader extends Header {
+
     @HeaderField(offset = 0, numBits = 16)
     private int sourcePort;
 
@@ -94,8 +95,10 @@ public class TcpHeader extends Header {
                 f("Acknowledgement number = %d", ackNumber),
                 f("Header length = %d", headerLength),
                 f("Flags = 0x%x", flags),
-                f("  ..%d..... = %s", urgentPointerBit, urgentPointerBit == 1 ? "Urgent pointer" : "No urgent pointer"),
-                f("  ...%d.... = %s", ackBit, ackBit == 1 ? "Ackowledgement" : "No acknowledgement"),
+                f("  ..%d..... = %s", urgentPointerBit,
+                        urgentPointerBit == 1 ? "Urgent pointer" : "No urgent pointer"),
+                f("  ...%d.... = %s", ackBit,
+                        ackBit == 1 ? "Ackowledgement" : "No acknowledgement"),
                 f("  ....%d... = %s", pushBit, pushBit == 1 ? "Push" : "No push"),
                 f("  .....%d.. = %s", resetBit, resetBit == 1 ? "Reset" : "No reset"),
                 f("  ......%d. = %s", synBit, synBit == 1 ? "Syn" : "No syn"),

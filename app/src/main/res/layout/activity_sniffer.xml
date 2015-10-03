@@ -1,9 +1,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:context="com.kyangc.demoplus.activities.SnifferActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.kyangc.demoplus.activities.SnifferActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appLayout"
@@ -14,7 +14,7 @@
             android:id="@+id/toolbar"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            app:title="Sniffer Demo"/>
+            app:title="Sniffer Demo" />
     </android.support.design.widget.AppBarLayout>
 
     <RelativeLayout
@@ -31,7 +31,7 @@
             android:layout_height="120dp"
             android:layout_centerInParent="true"
             android:src="@drawable/ic_error"
-            android:tint="@color/light_grey"/>
+            android:tint="@color/light_grey" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -40,7 +40,7 @@
             android:layout_centerHorizontal="true"
             android:text="No Record"
             android:textColor="@color/light_grey"
-            android:textSize="13sp"/>
+            android:textSize="13sp" />
     </RelativeLayout>
 
     <android.support.v4.widget.SwipeRefreshLayout
@@ -53,7 +53,7 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rvResult"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"/>
+            android:layout_height="fill_parent" />
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
@@ -75,7 +75,7 @@
                 android:id="@+id/ivRootMarker"
                 android:layout_width="8dp"
                 android:layout_height="8dp"
-                android:src="@drawable/mark_body"/>
+                android:src="@drawable/mark_body" />
 
             <TextView
                 android:id="@+id/tvRoot"
@@ -85,7 +85,7 @@
                 android:text="Rooted"
                 android:textColor="@color/black"
                 android:textSize="14sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
         </LinearLayout>
 
         <TextView
@@ -99,7 +99,7 @@
             android:layout_marginTop="10dp"
             android:text="Tcpdump is running"
             android:textColor="@color/grey"
-            android:textSize="12sp"/>
+            android:textSize="12sp" />
 
         <Button
             android:id="@+id/buttonRun"
@@ -109,7 +109,7 @@
             android:layout_centerVertical="true"
             android:layout_marginRight="10dp"
             android:background="@drawable/bt_normal"
-            android:text="RUN"/>
+            android:text="RUN" />
 
         <ProgressBar
             android:id="@+id/progress"
@@ -119,14 +119,14 @@
             android:layout_marginRight="5dp"
             android:layout_toLeftOf="@id/buttonRun"
 
-            android:visibility="gone"/>
+            android:visibility="gone" />
     </RelativeLayout>
 
     <View
         android:layout_width="fill_parent"
         android:layout_height="10dp"
         android:layout_above="@id/rlUpperPanel"
-        android:background="@drawable/shadow_reverse"/>
+        android:background="@drawable/shadow_reverse" />
 
     <RelativeLayout
         android:id="@+id/rlProgress"
@@ -150,7 +150,7 @@
                 android:layout_marginLeft="10dp"
                 android:layout_marginTop="10dp"
                 android:text="Requiring Root Access"
-                android:textColor="@color/white"/>
+                android:textColor="@color/white" />
 
             <com.pnikosis.materialishprogress.ProgressWheel
                 android:layout_width="13dp"
@@ -160,7 +160,7 @@
                 app:matProg_barColor="@color/white"
                 app:matProg_barWidth="1dp"
                 app:matProg_fillRadius="true"
-                app:matProg_progressIndeterminate="true"/>
+                app:matProg_progressIndeterminate="true" />
         </LinearLayout>
     </RelativeLayout>
 

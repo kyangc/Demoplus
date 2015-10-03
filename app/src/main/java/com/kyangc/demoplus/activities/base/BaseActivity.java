@@ -7,9 +7,9 @@ import android.support.v7.app.AppCompatActivity;
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
-    abstract void initData();
+    protected abstract void initData();
 
-    abstract void initViews();
+    protected abstract void initViews();
 
-    abstract void initReceivers();
+    protected abstract void initReceivers();
 }

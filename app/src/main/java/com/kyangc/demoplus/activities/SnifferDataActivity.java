@@ -1,5 +1,14 @@
 package com.kyangc.demoplus.activities;
 
+import com.kyangc.demoplus.R;
+import com.kyangc.demoplus.adapters.SnifferDataAdapter;
+import com.kyangc.demoplus.pcap.EthernetFrameList;
+import com.kyangc.demoplus.pcap.LibpcapParser;
+import com.kyangc.demoplus.pcap.data.Packet;
+import com.kyangc.demoplus.pcap.header.EthernetHeader;
+import com.kyangc.demoplus.utils.L;
+import com.kyangc.demoplus.utils.T;
+
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -12,15 +21,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.kyangc.demoplus.R;
-import com.kyangc.demoplus.adapters.SnifferDataAdapter;
-import com.kyangc.demoplus.pcap.EthernetFrameList;
-import com.kyangc.demoplus.pcap.LibpcapParser;
-import com.kyangc.demoplus.pcap.data.Packet;
-import com.kyangc.demoplus.pcap.header.EthernetHeader;
-import com.kyangc.demoplus.utils.L;
-import com.kyangc.demoplus.utils.T;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,18 +38,25 @@ public class SnifferDataActivity extends AppCompatActivity {
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
+
     @Bind(R.id.rvResult)
     RecyclerView rvResult;
+
     @Bind(R.id.slResult)
     SwipeRefreshLayout slResult;
+
     @Bind(R.id.rlProgress)
     RelativeLayout rlProgress;
+
     @Bind(R.id.tvLoadingHint)
     TextView tvHint;
 
     SnifferDataActivity context;
+
     String filePath = null;
+
     SnifferDataAdapter adapter;
+
     File pcapFile;
 
     public static void start(Context context, String filePath) {
@@ -119,7 +126,7 @@ public class SnifferDataActivity extends AppCompatActivity {
                 if (o == null) {
                     T.showShort(context.get(), "Error occurred");
                 } else {
-                    for (Packet<EthernetHeader> packet:packets){
+                    for (Packet<EthernetHeader> packet : packets) {
                         L.i(packet.toString());
                     }
                 }

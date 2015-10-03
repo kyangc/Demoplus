@@ -1,8 +1,8 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:context="com.kyangc.demoplus.fragments.MainFragment">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.kyangc.demoplus.fragments.MainFragment">
 
     <RelativeLayout
         android:layout_width="100dp"
@@ -18,7 +18,7 @@
             android:layout_height="60dp"
             android:layout_centerHorizontal="true"
             android:src="@drawable/ic_fighter"
-            android:tint="@color/dark_blue"/>
+            android:tint="@color/dark_blue" />
 
         <TextView
             android:layout_width="fill_parent"
@@ -29,12 +29,12 @@
             android:text="CONSTRUCTING...\nCOM BAK SOON!"
             android:textColor="@color/dark_blue"
             android:textSize="11sp"
-            android:textStyle="bold|italic"/>
+            android:textStyle="bold|italic" />
     </RelativeLayout>
 
     <ImageView
         android:layout_width="160dp"
         android:layout_height="160dp"
         android:layout_centerInParent="true"
-        android:src="@drawable/ic_watch"/>
+        android:src="@drawable/ic_watch" />
 </RelativeLayout>

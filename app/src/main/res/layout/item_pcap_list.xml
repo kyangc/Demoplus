@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="50dp"
     android:layout_marginLeft="5dp"
@@ -23,7 +22,7 @@
             android:layout_marginLeft="10dp"
             android:text="Filename"
             android:textColor="@color/black"
-            android:textSize="14sp"/>
+            android:textSize="14sp" />
 
         <ImageView
             android:id="@+id/ivDelete"
@@ -32,7 +31,7 @@
             android:layout_alignParentRight="true"
             android:padding="10dp"
             android:src="@drawable/ic_delete"
-            android:tint="@color/red"/>
+            android:tint="@color/red" />
 
         <ImageView
             android:id="@+id/ivEmail"
@@ -41,6 +40,6 @@
             android:layout_toLeftOf="@id/ivDelete"
             android:padding="10dp"
             android:src="@drawable/ic_email"
-            android:tint="@color/blue"/>
+            android:tint="@color/blue" />
     </RelativeLayout>
 </android.support.v7.widget.CardView>

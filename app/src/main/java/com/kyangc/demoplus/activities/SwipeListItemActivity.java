@@ -1,5 +1,10 @@
 package com.kyangc.demoplus.activities;
 
+import com.kyangc.demoplus.R;
+import com.kyangc.demoplus.adapters.SwipeAndDragAdapter;
+import com.kyangc.demoplus.internal.OnStartDragListener;
+import com.kyangc.demoplus.internal.SimpleItemTouchHelperCallback;
+
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -7,11 +12,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.View;
-
-import com.kyangc.demoplus.R;
-import com.kyangc.demoplus.adapters.SwipeAndDragAdapter;
-import com.kyangc.demoplus.internal.OnStartDragListener;
-import com.kyangc.demoplus.internal.SimpleItemTouchHelperCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,10 +25,12 @@ public class SwipeListItemActivity extends AppCompatActivity {
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
+
     @Bind(R.id.rvList)
     RecyclerView rvList;
 
     private ItemTouchHelper mItemTouchHelper;
+
     private List<String> dataSet;
 
     @Override

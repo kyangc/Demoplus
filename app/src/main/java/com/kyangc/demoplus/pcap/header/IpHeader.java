@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class IpHeader extends Header {
+
     @SuppressWarnings("serial")
     private static final Map<Integer, Protocol> protocolMap =
             new HashMap<Integer, Protocol>() {
@@ -15,28 +16,40 @@ public class IpHeader extends Header {
                     put(17, Protocol.UDP);
                 }
             };
+
     @HeaderField(offset = 0, numBits = 4)
     private short version;
+
     @HeaderField(offset = 4, numBits = 4)
     private short headerLength;
+
     @HeaderField(offset = 8, numBits = 8)
     private short typeOfService;
+
     @HeaderField(offset = 16, numBits = 16)
     private int totalLength;
+
     @HeaderField(offset = 32, numBits = 16)
     private int datagramIdentifier;
+
     @HeaderField(offset = 48, numBits = 3)
     private short flags;
+
     @HeaderField(offset = 51, numBits = 13)
     private int fragmentOffset;
+
     @HeaderField(offset = 64, numBits = 8)
     private short timeToLive;
+
     @HeaderField(offset = 72, numBits = 8)
     private Protocol protocol;
+
     @HeaderField(offset = 80, numBits = 16)
     private int headerChecksum;
+
     @HeaderField(offset = 96, numBits = 32)
     private InetAddress sourceIpAddress;
+
     @HeaderField(offset = 128, numBits = 32)
     private InetAddress destIpAddress;
 
@@ -54,7 +67,6 @@ public class IpHeader extends Header {
      * Parses a canonically formatted IPv4 address into a {@link InetAddress} object.
      *
      * @param address the string address to parse
-     *
      * @return an {@link InetAddress} that represents the provided address
      */
     public static InetAddress parseIpV4Address(String address) {
@@ -74,7 +86,9 @@ public class IpHeader extends Header {
 
     @Override
     public Class<? extends Header> getDataPacketHeaderType() {
-        if (protocol == null) return null;
+        if (protocol == null) {
+            return null;
+        }
 
         switch (protocol) {
             case TCP:
@@ -149,9 +163,12 @@ public class IpHeader extends Header {
                 f("Total length = %d bytes", totalLength),
                 f("Identification: 0x%x (%d)", datagramIdentifier, datagramIdentifier),
                 f("  Flags: 0x%02x", flags),
-                f("    %d... = Reserved bit: %s", reservedBit, reservedBit != 0 ? "Set" : "Not set"),
-                f("    .%d.. = Don't fragment: %s", dontFragmentBit, dontFragmentBit != 0 ? "Set" : "Not set"),
-                f("    ..%d. = More fragments: %s", moreFragmentsBit, moreFragmentsBit != 0 ? "Set" : "Not set"),
+                f("    %d... = Reserved bit: %s", reservedBit,
+                        reservedBit != 0 ? "Set" : "Not set"),
+                f("    .%d.. = Don't fragment: %s", dontFragmentBit,
+                        dontFragmentBit != 0 ? "Set" : "Not set"),
+                f("    ..%d. = More fragments: %s", moreFragmentsBit,
+                        moreFragmentsBit != 0 ? "Set" : "Not set"),
                 f("  Fragment Offset: %d", fragmentOffset),
                 f("Time to live = %d seconds/hops", timeToLive),
                 f("Protocol = %d (%s)", protocol.getCode(), protocol),

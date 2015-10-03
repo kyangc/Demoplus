@@ -8,22 +8,22 @@
                 android:id="@+id/home"
                 android:checkable="true"
                 android:icon="@drawable/ic_home"
-                android:title="Home Page"/>
+                android:title="Home Page" />
             <item
                 android:id="@+id/http_client"
                 android:checkable="true"
                 android:icon="@drawable/ic_connection"
-                android:title="Http/s Demo"/>
+                android:title="Http/s Demo" />
             <item
                 android:id="@+id/sniffer_client"
                 android:checkable="true"
                 android:icon="@drawable/ic_sniffer"
-                android:title="Sniffer Demo"/>
+                android:title="Sniffer Demo" />
             <item
                 android:id="@+id/swipe_demo"
                 android:checkable="true"
                 android:icon="@drawable/ic_list"
-                android:title="Swipe'n Drag Demo"/>
+                android:title="Swipe'n Drag Demo" />
         </menu>
     </item>
 
@@ -35,17 +35,17 @@
                 android:id="@+id/about"
                 android:checkable="true"
                 android:icon="@drawable/ic_face"
-                android:title="About"/>
+                android:title="About" />
             <item
                 android:id="@+id/setting"
                 android:checkable="true"
                 android:icon="@drawable/ic_setting"
-                android:title="Setting"/>
+                android:title="Setting" />
             <item
                 android:id="@+id/quit"
                 android:checkable="true"
                 android:icon="@drawable/ic_power"
-                android:title="Quit"/>
+                android:title="Quit" />
         </menu>
     </item>
 </menu>

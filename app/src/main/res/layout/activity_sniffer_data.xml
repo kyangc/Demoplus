@@ -1,9 +1,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                tools:context="com.kyangc.demoplus.activities.SnifferDataActivity">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.kyangc.demoplus.activities.SnifferDataActivity">
 
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appLayout"
@@ -14,7 +14,7 @@
             android:id="@+id/toolbar"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            app:title="Sniffer Data"/>
+            app:title="Sniffer Data" />
     </android.support.design.widget.AppBarLayout>
 
     <android.support.v4.widget.SwipeRefreshLayout
@@ -26,7 +26,7 @@
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rvResult"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"/>
+            android:layout_height="fill_parent" />
 
     </android.support.v4.widget.SwipeRefreshLayout>
 
@@ -53,7 +53,7 @@
                 android:layout_marginTop="20dp"
                 app:matProg_barColor="@color/white"
                 app:matProg_barWidth="2dp"
-                app:matProg_progressIndeterminate="true"/>
+                app:matProg_progressIndeterminate="true" />
 
             <TextView
                 android:id="@+id/tvLoadingHint"
@@ -62,8 +62,7 @@
                 android:layout_marginBottom="15dp"
                 android:text="Loading"
                 android:textColor="@color/white"
-                android:textSize="11sp"
-                />
+                android:textSize="11sp" />
         </LinearLayout>
     </RelativeLayout>
 </RelativeLayout>

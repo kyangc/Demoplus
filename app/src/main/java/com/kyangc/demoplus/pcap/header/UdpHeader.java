@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UdpHeader extends Header {
+
     @SuppressWarnings("serial")
     private static final Map<Integer, Protocol> portProtocolMap =
             new HashMap<Integer, Protocol>() {
@@ -12,6 +13,7 @@ public class UdpHeader extends Header {
                     put(53, Protocol.DNS);
                 }
             };
+
     @SuppressWarnings("serial")
     private static final Map<Integer, String> portNamesMap =
             new HashMap<Integer, String>() {
@@ -20,12 +22,16 @@ public class UdpHeader extends Header {
                     put(68, "BOOTP Client");
                 }
             };
+
     @HeaderField(offset = 0, numBits = 16)
     private int sourcePort;
+
     @HeaderField(offset = 16, numBits = 16)
     private int destPort;
+
     @HeaderField(offset = 32, numBits = 16)
     private int length;
+
     @HeaderField(offset = 48, numBits = 16)
     private int checksum;
 

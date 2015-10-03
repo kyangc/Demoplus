@@ -50,39 +50,59 @@ public class SnifferActivity extends AppCompatActivity implements View.OnClickLi
     public static final String TAG = "SnifferActivity";
 
     public static final int ROOT_STATUS_ROOTED = 0;
+
     public static final int ROOT_STATUS_ROOTING = 1;
+
     public static final int ROOT_STATUS_UNROOTED = 2;
-    public static final String DATA_STORAGE_DIR = Environment.getExternalStorageDirectory() + "/pcaps/";
+
+    public static final String DATA_STORAGE_DIR = Environment.getExternalStorageDirectory()
+            + "/pcaps/";
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
+
     @Bind(R.id.rvResult)
     RecyclerView rvResult;
+
     @Bind(R.id.rlProgress)
     RelativeLayout rlProgress;
+
     @Bind(R.id.ivRootMarker)
     ImageView ivRootMarker;
+
     @Bind(R.id.tvRoot)
     TextView tvRootStatus;
+
     @Bind(R.id.tvStatus)
     TextView tvRunningStatus;
+
     @Bind(R.id.progress)
     ProgressBar runningProgress;
+
     @Bind(R.id.buttonRun)
     Button buttonRun;
+
     @Bind(R.id.tvProgressHint)
     TextView tvHint;
+
     @Bind(R.id.slResult)
     SwipeRefreshLayout slResult;
+
     @Bind(R.id.rlNoRecord)
     RelativeLayout rlNoRecord;
 
     boolean isRooted = false;
+
     boolean isRootRunning = false;
+
     SnifferActivity context;
+
     SnifferResultListAdapter adapter;
+
     List<SnifferDataEntity> displayList;
+
     SnifferService.SnifferBinder snifferBinder;
+
     ServiceConnection serviceConnection;
 
     public static void start(Context context) {
@@ -101,7 +121,8 @@ public class SnifferActivity extends AppCompatActivity implements View.OnClickLi
                 context.get().displayList.clear();
                 List<File> paths = FilesUtils.getListFiles(new File(DATA_STORAGE_DIR));
                 for (File file : paths) {
-                    context.get().displayList.add(new SnifferDataEntity(file.getAbsolutePath(), file.getName()));
+                    context.get().displayList
+                            .add(new SnifferDataEntity(file.getAbsolutePath(), file.getName()));
                 }
                 return null;
             }
@@ -111,7 +132,8 @@ public class SnifferActivity extends AppCompatActivity implements View.OnClickLi
                 super.onPostExecute(o);
                 context.get().adapter.notifyDataSetChanged();
                 context.get().slResult.setRefreshing(false);
-                context.get().displayBackground(context.get().displayList == null || context.get().displayList.size() <= 0);
+                context.get().displayBackground(
+                        context.get().displayList == null || context.get().displayList.size() <= 0);
             }
         };
     }
@@ -140,7 +162,9 @@ public class SnifferActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (serviceConnection != null) unbindService(serviceConnection);
+        if (serviceConnection != null) {
+            unbindService(serviceConnection);
+        }
     }
 
     private void initService() {
@@ -308,8 +332,9 @@ public class SnifferActivity extends AppCompatActivity implements View.OnClickLi
                                 if (FileUtils.deleteFile(filePath)) {
                                     int location = -1;
                                     for (location = 0; location < displayList.size(); location++) {
-                                        if (displayList.get(location).filePath.equals(filePath))
+                                        if (displayList.get(location).filePath.equals(filePath)) {
                                             break;
+                                        }
                                     }
                                     if (location != -1) {
                                         displayList.remove(location);
@@ -381,7 +406,9 @@ public class SnifferActivity extends AppCompatActivity implements View.OnClickLi
                 isRootRunning = false;
                 displayProgress(false, getString(R.string.requiring_root_access));
                 displayRootStatus(isRooted ? ROOT_STATUS_ROOTED : ROOT_STATUS_UNROOTED);
-                if (isRooted) initService();
+                if (isRooted) {
+                    initService();
+                }
             }
         };
     }

@@ -1,9 +1,9 @@
 package com.kyangc.demoplus.utils;
 
+import com.kyangc.demoplus.app.DemoApp;
+
 import android.content.Context;
 import android.content.SharedPreferences;
-
-import com.kyangc.demoplus.app.DemoApp;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -26,9 +26,12 @@ public class SPUtils {
      */
     public static void put(String key, Object object) {
 
-        if (object == null) return;
+        if (object == null) {
+            return;
+        }
 
-        SharedPreferences sp = DemoApp.getAppContext().getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
+        SharedPreferences sp = DemoApp.getAppContext()
+                .getSharedPreferences(FILE_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
 
         if (object instanceof String) {
@@ -74,7 +77,9 @@ public class SPUtils {
      * 移除某个key值已经对应的值
      */
     public static void remove(String key) {
-        if (!contains(key)) return;
+        if (!contains(key)) {
+            return;
+        }
         SharedPreferences sp = DemoApp.getAppContext().getSharedPreferences(FILE_NAME,
                 Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sp.edit();
@@ -115,6 +120,7 @@ public class SPUtils {
      * 创建一个解决SharedPreferencesCompat.apply方法的一个兼容类
      */
     private static class SharedPreferencesCompat {
+
         private static final Method sApplyMethod = findApplyMethod();
 
         /**

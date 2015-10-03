@@ -11,7 +11,8 @@ import java.io.File;
  */
 public class EmailUtils {
 
-    public static void sendEmailWithAttach(Context context, String addr, String body, String title, File attachment) {
+    public static void sendEmailWithAttach(Context context, String addr, String body, String title,
+            File attachment) {
         String[] tos = {addr};
         Intent intent = new Intent(Intent.ACTION_SEND);
         intent.putExtra(Intent.EXTRA_EMAIL, tos);

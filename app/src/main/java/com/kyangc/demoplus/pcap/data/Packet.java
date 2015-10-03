@@ -3,7 +3,9 @@ package com.kyangc.demoplus.pcap.data;
 import com.kyangc.demoplus.pcap.header.Header;
 
 public class Packet<H extends Header> implements Data {
+
     private H header;
+
     private Data data;
 
     public Packet(H header, Data data) {

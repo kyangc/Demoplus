@@ -1,12 +1,12 @@
 package com.kyangc.demoplus.activities;
 
+import com.kyangc.demoplus.R;
+import com.kyangc.demoplus.utils.S;
+
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
-
-import com.kyangc.demoplus.R;
-import com.kyangc.demoplus.utils.S;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -18,6 +18,7 @@ public class AboutActivity extends AppCompatActivity {
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
+
     @Bind(R.id.ivAvatar)
     CircleImageView avatar;
 

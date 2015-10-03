@@ -9,8 +9,11 @@ import com.loopj.android.http.ResponseHandlerInterface;
 public class HttpRequestEvent {
 
     public int type;
+
     public String url;
+
     public RequestParams params;
+
     public ResponseHandlerInterface handler;
 
     public int getType() {

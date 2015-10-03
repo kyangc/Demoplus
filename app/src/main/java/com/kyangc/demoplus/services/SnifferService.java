@@ -1,15 +1,15 @@
 package com.kyangc.demoplus.services;
 
+import com.kyangc.demoplus.utils.L;
+import com.stericson.RootShell.RootShell;
+import com.stericson.RootShell.exceptions.RootDeniedException;
+import com.stericson.RootShell.execution.Command;
+
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Environment;
 import android.os.IBinder;
-
-import com.kyangc.demoplus.utils.L;
-import com.stericson.RootShell.RootShell;
-import com.stericson.RootShell.exceptions.RootDeniedException;
-import com.stericson.RootShell.execution.Command;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,14 +22,20 @@ public class SnifferService extends Service {
 
     public static final String TAG = "Sniffer Service";
 
-    public static final String COMMAND_START_SNIFFER_VERBOSE = "tcpdump -vv -s 0 '(tcp and (not arp) and (not icmp))'";
-    public static final String COMMAND_START_SNIFFER_STORAGE = "tcpdump -vv -s 0 '(tcp and (not arp) and (not icmp))' -w /sdcard/pcaps/";
+    public static final String COMMAND_START_SNIFFER_VERBOSE
+            = "tcpdump -vv -s 0 '(tcp and (not arp) and (not icmp))'";
+
+    public static final String COMMAND_START_SNIFFER_STORAGE
+            = "tcpdump -vv -s 0 '(tcp and (not arp) and (not icmp))' -w /sdcard/pcaps/";
+
     public static final String COMMAND_START_SNIFFER_STOP = "killall tcpdump";
 
     public static final int TCPDUMP_RUNNING_TYPE_VERBOSE = 0;
+
     public static final int TCPDUMP_RUNNING_TYPE_STORAGE = 1;
 
     public static final String PCAPNG_FILE_NAME = "sniffered_data_";
+
     public static final String PCAPNG_FILE_SUFFIX = ".pcap";
 
     public String[] prepareTcpCommands =
@@ -42,9 +48,13 @@ public class SnifferService extends Service {
             };
 
     private SnifferService context;
+
     private OnTaskFinishListener onTaskFinishListener = null;
+
     private boolean isTcpdumpRunning = false;
+
     private boolean isTcpdumpPrepared = false;
+
     private SnifferBinder binder = null;
 
     @Override
@@ -71,14 +81,16 @@ public class SnifferService extends Service {
             binder = new SnifferBinder();
         }
 
-        if (!isTcpdumpPrepared) try {
-            prepareTcpdump();
-        } catch (TimeoutException e) {
-            e.printStackTrace();
-        } catch (RootDeniedException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (!isTcpdumpPrepared) {
+            try {
+                prepareTcpdump();
+            } catch (TimeoutException e) {
+                e.printStackTrace();
+            } catch (RootDeniedException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
         return binder;
@@ -98,7 +110,9 @@ public class SnifferService extends Service {
         return new Command(0, prepareTcpCommands) {
             @Override
             public void commandOutput(int id, String line) {
-                if (onTaskFinishListener != null) onTaskFinishListener.onCommandRunning(line);
+                if (onTaskFinishListener != null) {
+                    onTaskFinishListener.onCommandRunning(line);
+                }
                 super.commandOutput(id, line);
             }
 
@@ -106,16 +120,20 @@ public class SnifferService extends Service {
             public void commandCompleted(int id, int exitcode) {
                 super.commandCompleted(id, exitcode);
                 isTcpdumpPrepared = true;
-                if (onTaskFinishListener != null)
-                    onTaskFinishListener.onSnifferPrepared(OnTaskFinishListener.STATUS_CODE_SUCCEED, "exit code = " + exitcode);
+                if (onTaskFinishListener != null) {
+                    onTaskFinishListener.onSnifferPrepared(OnTaskFinishListener.STATUS_CODE_SUCCEED,
+                            "exit code = " + exitcode);
+                }
             }
 
             @Override
             public void commandTerminated(int id, String reason) {
                 super.commandTerminated(id, reason);
                 isTcpdumpPrepared = false;
-                if (onTaskFinishListener != null)
-                    onTaskFinishListener.onSnifferPrepared(OnTaskFinishListener.STATUS_CODE_FAILED, reason);
+                if (onTaskFinishListener != null) {
+                    onTaskFinishListener
+                            .onSnifferPrepared(OnTaskFinishListener.STATUS_CODE_FAILED, reason);
+                }
             }
         };
     }
@@ -136,8 +154,11 @@ public class SnifferService extends Service {
         return new Command(0, command) {
             @Override
             public void commandOutput(int id, String line) {
-                if (onTaskFinishListener != null) onTaskFinishListener.onCommandRunning(line);
-                else L.i(line);
+                if (onTaskFinishListener != null) {
+                    onTaskFinishListener.onCommandRunning(line);
+                } else {
+                    L.i(line);
+                }
                 super.commandOutput(id, line);
             }
         };
@@ -145,26 +166,35 @@ public class SnifferService extends Service {
 
     private void prepareTcpdump() throws TimeoutException, RootDeniedException, IOException {
         RootShell.getShell(true).add(getPrepareTcpdumpCommand());
-        if (onTaskFinishListener != null)
+        if (onTaskFinishListener != null) {
             onTaskFinishListener.onSnifferPrepared(OnTaskFinishListener.STATUS_CODE_SUCCEED, null);
+        }
     }
 
     private void startSniffer(int type) throws TimeoutException, RootDeniedException, IOException {
         if (!isTcpdumpRunning && isTcpdumpPrepared) {
             switch (type) {
                 case TCPDUMP_RUNNING_TYPE_VERBOSE:
-                    RootShell.getShell(true).add(getStartSnifferCommand(TCPDUMP_RUNNING_TYPE_VERBOSE));
+                    RootShell.getShell(true)
+                            .add(getStartSnifferCommand(TCPDUMP_RUNNING_TYPE_VERBOSE));
                     isTcpdumpRunning = true;
-                    if (onTaskFinishListener != null)
-                        onTaskFinishListener.onSnifferStarted(OnTaskFinishListener.STATUS_CODE_SUCCEED, null);
+                    if (onTaskFinishListener != null) {
+                        onTaskFinishListener
+                                .onSnifferStarted(OnTaskFinishListener.STATUS_CODE_SUCCEED, null);
+                    }
                     break;
                 case TCPDUMP_RUNNING_TYPE_STORAGE:
                     File file = new File(getStorageDir());
-                    if (!file.exists()) file.mkdirs();
-                    RootShell.getShell(true).add(getStartSnifferCommand(TCPDUMP_RUNNING_TYPE_STORAGE));
+                    if (!file.exists()) {
+                        file.mkdirs();
+                    }
+                    RootShell.getShell(true)
+                            .add(getStartSnifferCommand(TCPDUMP_RUNNING_TYPE_STORAGE));
                     isTcpdumpRunning = true;
-                    if (onTaskFinishListener != null)
-                        onTaskFinishListener.onSnifferStarted(OnTaskFinishListener.STATUS_CODE_SUCCEED, null);
+                    if (onTaskFinishListener != null) {
+                        onTaskFinishListener
+                                .onSnifferStarted(OnTaskFinishListener.STATUS_CODE_SUCCEED, null);
+                    }
                     break;
                 default:
                     break;
@@ -175,8 +205,9 @@ public class SnifferService extends Service {
     private void stopSniffer() {
         ShellUtils.execCommand(COMMAND_START_SNIFFER_STOP, true);
         isTcpdumpRunning = false;
-        if (onTaskFinishListener != null)
+        if (onTaskFinishListener != null) {
             onTaskFinishListener.onSnifferStopped(OnTaskFinishListener.STATUS_CODE_SUCCEED, null);
+        }
     }
 
     private String getStorageDir() {
@@ -203,7 +234,8 @@ public class SnifferService extends Service {
             prepareTcpdump();
         }
 
-        public void start(int runningType) throws IOException, RootDeniedException, TimeoutException {
+        public void start(int runningType)
+                throws IOException, RootDeniedException, TimeoutException {
             startSniffer(runningType);
         }
 

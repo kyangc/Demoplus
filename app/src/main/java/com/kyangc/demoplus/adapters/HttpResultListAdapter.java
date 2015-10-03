@@ -1,5 +1,8 @@
 package com.kyangc.demoplus.adapters;
 
+import com.kyangc.demoplus.R;
+import com.kyangc.demoplus.entities.HttpResultEntity;
+
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -7,9 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.kyangc.demoplus.R;
-import com.kyangc.demoplus.entities.HttpResultEntity;
 
 import java.util.ArrayList;
 
@@ -19,10 +19,13 @@ import butterknife.ButterKnife;
 /**
  * Created by chengkangyang on 七月.30.2015
  */
-public class HttpResultListAdapter extends RecyclerView.Adapter<HttpResultListAdapter.ItemViewHolder> {
+public class HttpResultListAdapter
+        extends RecyclerView.Adapter<HttpResultListAdapter.ItemViewHolder> {
 
     ArrayList<HttpResultEntity> dataSet;
+
     Context context;
+
     LayoutInflater inflater;
 
     public HttpResultListAdapter(Context context) {
@@ -37,7 +40,9 @@ public class HttpResultListAdapter extends RecyclerView.Adapter<HttpResultListAd
 
     @Override
     public ItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        if (viewType == -1) return null;
+        if (viewType == -1) {
+            return null;
+        }
         return new ItemViewHolder(inflater.inflate(R.layout.item_http_result_list, parent, false));
     }
 
@@ -45,22 +50,26 @@ public class HttpResultListAdapter extends RecyclerView.Adapter<HttpResultListAd
     public void onBindViewHolder(ItemViewHolder holder, int position) {
         switch (getItemViewType(position)) {
             case HttpResultEntity.ITEM_TYPE_CODE:
-                holder.ivMark.setImageDrawable(context.getResources().getDrawable(R.drawable.mark_code));
+                holder.ivMark
+                        .setImageDrawable(context.getResources().getDrawable(R.drawable.mark_code));
                 holder.tvHead.setText("Status Code:");
                 holder.tvBody.setText(getEntityAt(position).content);
                 break;
             case HttpResultEntity.ITEM_TYPE_HEADER:
-                holder.ivMark.setImageDrawable(context.getResources().getDrawable(R.drawable.mark_header));
+                holder.ivMark.setImageDrawable(
+                        context.getResources().getDrawable(R.drawable.mark_header));
                 holder.tvHead.setText("Header:");
                 holder.tvBody.setText(getEntityAt(position).content);
                 break;
             case HttpResultEntity.ITEM_TYPE_RESPONSE:
-                holder.ivMark.setImageDrawable(context.getResources().getDrawable(R.drawable.mark_body));
+                holder.ivMark
+                        .setImageDrawable(context.getResources().getDrawable(R.drawable.mark_body));
                 holder.tvHead.setText("Response:");
                 holder.tvBody.setText(getEntityAt(position).content);
                 break;
             case HttpResultEntity.ITEM_TYPE_ERROR:
-                holder.ivMark.setImageDrawable(context.getResources().getDrawable(R.drawable.mark_error));
+                holder.ivMark.setImageDrawable(
+                        context.getResources().getDrawable(R.drawable.mark_error));
                 holder.tvHead.setText("Error:");
                 holder.tvBody.setText(getEntityAt(position).content);
                 break;
@@ -80,7 +89,9 @@ public class HttpResultListAdapter extends RecyclerView.Adapter<HttpResultListAd
     }
 
     public HttpResultEntity getEntityAt(int position) {
-        if (position < 0 || position >= getItemCount()) return null;
+        if (position < 0 || position >= getItemCount()) {
+            return null;
+        }
         return dataSet.get(position);
     }
 
@@ -88,8 +99,10 @@ public class HttpResultListAdapter extends RecyclerView.Adapter<HttpResultListAd
 
         @Bind(R.id.ivMark)
         ImageView ivMark;
+
         @Bind(R.id.tvType)
         TextView tvHead;
+
         @Bind(R.id.tvBody)
         TextView tvBody;
 

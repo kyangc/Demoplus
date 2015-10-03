@@ -9,7 +9,6 @@ public interface ItemTouchHelperAdapter {
      *
      * @param fromPosition 开始拖动的位置
      * @param toPosition   拖动结束的位置
-     *
      * @return 如果到了新的位置则返回True
      */
     boolean onItemMove(int fromPosition, int toPosition);

@@ -21,11 +21,15 @@ import butterknife.ButterKnife;
 /**
  * Created by chengkangyang on 八月.06.2015
  */
-public class SnifferResultListAdapter extends RecyclerView.Adapter<SnifferResultListAdapter.ItemViewHolder> {
+public class SnifferResultListAdapter
+        extends RecyclerView.Adapter<SnifferResultListAdapter.ItemViewHolder> {
 
     Context context;
+
     List<SnifferDataEntity> dataSet;
+
     LayoutInflater inflater;
+
     OnClickListener onClickListener;
 
     public SnifferResultListAdapter(Context context) {
@@ -56,15 +60,17 @@ public class SnifferResultListAdapter extends RecyclerView.Adapter<SnifferResult
         holder.ivDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (onClickListener != null)
+                if (onClickListener != null) {
                     onClickListener.onDeleteClick(entity.filePath);
+                }
             }
         });
         holder.ivEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (onClickListener != null)
+                if (onClickListener != null) {
                     onClickListener.onEmailClick(entity.fileName, entity.filePath);
+                }
             }
         });
         holder.rlContainer.setOnClickListener(new View.OnClickListener() {
@@ -83,11 +89,14 @@ public class SnifferResultListAdapter extends RecyclerView.Adapter<SnifferResult
     }
 
     public SnifferDataEntity getEntityAt(int position) {
-        if (position < 0 || position >= getItemCount()) return null;
+        if (position < 0 || position >= getItemCount()) {
+            return null;
+        }
         return dataSet.get(position);
     }
 
     public interface OnClickListener {
+
         void onEmailClick(String fileName, String filePath);
 
         void onDeleteClick(String filePath);
@@ -99,10 +108,13 @@ public class SnifferResultListAdapter extends RecyclerView.Adapter<SnifferResult
 
         @Bind(R.id.tvFilename)
         TextView tvFileName;
+
         @Bind(R.id.ivEmail)
         ImageView ivEmail;
+
         @Bind(R.id.ivDelete)
         ImageView ivDelete;
+
         @Bind(R.id.rlContainer)
         RelativeLayout rlContainer;
 

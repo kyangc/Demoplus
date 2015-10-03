@@ -56,7 +56,6 @@ public abstract class Header {
 
     /**
      * @param signed an array of bytes that represents a number longer than a long.
-     *
      * @return a {@link BigInteger} whose value is {@code signed}, unsigned.
      */
     public static BigInteger u(byte[] signed) {
@@ -65,7 +64,6 @@ public abstract class Header {
 
     /**
      * @param signed a signed integer
-     *
      * @return that integer, unsigned, held in a long
      */
     public static long u(int signed) {
@@ -74,7 +72,6 @@ public abstract class Header {
 
     /**
      * @param signed a signed short
-     *
      * @return that short, unsigned, held in an int
      */
     public static int u(short signed) {
@@ -83,7 +80,6 @@ public abstract class Header {
 
     /**
      * @param signed a signed byte
-     *
      * @return that byte, unsigned, held in a short
      */
     public static short u(byte signed) {
@@ -113,7 +109,6 @@ public abstract class Header {
      *
      * @param string the string to format
      * @param args   the format arguments
-     *
      * @return the formatted string
      */
     public String f(String string, Object... args) {
@@ -124,7 +119,6 @@ public abstract class Header {
      * Convenience function for building a string from a list of lines.
      *
      * @param lines the lines to be joined in a single string
-     *
      * @return a single string of all lines
      */
     public String makeText(String prefix, String... lines) {
@@ -139,6 +133,7 @@ public abstract class Header {
     @Target(ElementType.FIELD)
     @Retention(RetentionPolicy.RUNTIME)
     public @interface HeaderField {
+
         int offset();
 
         int numBits();
@@ -147,6 +142,7 @@ public abstract class Header {
     @Target(ElementType.METHOD)
     @Retention(RetentionPolicy.RUNTIME)
     public @interface TypeMapper {
+
         Class<?> value();
     }
 }

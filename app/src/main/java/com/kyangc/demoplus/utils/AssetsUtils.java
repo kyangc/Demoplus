@@ -17,7 +17,8 @@ public class AssetsUtils {
         InputStream myInput;
         OutputStream myOutput = null;
 
-        myOutput = new FileOutputStream(Environment.getExternalStorageDirectory() + java.io.File.separator + fileName);
+        myOutput = new FileOutputStream(
+                Environment.getExternalStorageDirectory() + java.io.File.separator + fileName);
         myInput = context.getAssets().open(fileName);
         byte[] buffer = new byte[1024];
         int length = myInput.read(buffer);

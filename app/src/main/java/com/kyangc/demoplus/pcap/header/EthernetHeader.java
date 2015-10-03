@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EthernetHeader extends Header {
+
     @SuppressWarnings("serial")
     private static final Map<Integer, EtherType> etherTypeMap =
             new HashMap<Integer, EtherType>() {
@@ -12,10 +13,13 @@ public class EthernetHeader extends Header {
                     put(0x0800, EtherType.IP);
                 }
             };
+
     @HeaderField(offset = 0, numBits = 48)
     private byte[] sourceMacAddress;
+
     @HeaderField(offset = 48, numBits = 48)
     private byte[] destMacAddress;
+
     @HeaderField(offset = 96, numBits = 16)
     private EtherType type;
 
@@ -34,7 +38,9 @@ public class EthernetHeader extends Header {
         for (int i = 0; i < macAddress.length; ++i) {
             sb.append(String.format("%02x", macAddress[i]));
 
-            if (i < macAddress.length - 1) sb.append(":");
+            if (i < macAddress.length - 1) {
+                sb.append(":");
+            }
         }
 
         return sb.toString();

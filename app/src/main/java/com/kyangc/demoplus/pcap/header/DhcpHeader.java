@@ -3,20 +3,27 @@ package com.kyangc.demoplus.pcap.header;
 import java.net.InetAddress;
 
 public class DhcpHeader extends Header {
+
     @SuppressWarnings("unused")
     @HeaderField(offset = 0, numBits = 96)
     private byte[] preamble;
+
     @HeaderField(offset = 96, numBits = 32)
     private InetAddress clientIpAddress;
+
     @HeaderField(offset = 128, numBits = 32)
     private InetAddress thisIpAddress;
+
     @HeaderField(offset = 160, numBits = 32)
     private InetAddress serverIpAddress;
+
     @HeaderField(offset = 192, numBits = 32)
     private InetAddress routerIpAddress;
+
     @SuppressWarnings("unused")
     @HeaderField(offset = 224, numBits = 1712)
     private byte[] ignored;
+
     @HeaderField(offset = 1936, numBits = 8)
     private MessageType dhcpMessageType;
 

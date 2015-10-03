@@ -6,12 +6,17 @@ package com.kyangc.demoplus.entities;
 public class HttpMethodEntity {
 
     public static final int GET = 0;
+
     public static final int POST = 1;
+
     public static final int PUT = 2;
+
     public static final int PATCH = 3;
+
     public static final int DELETE = 4;
 
     public String name;
+
     public int method;
 
     public HttpMethodEntity(String name, int method) {

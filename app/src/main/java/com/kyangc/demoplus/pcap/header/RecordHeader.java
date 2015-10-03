@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.nio.ByteOrder;
 
 public class RecordHeader extends Header {
+
     @HeaderField(offset = 0, numBits = 64)
     private BigInteger timestamp;
 
