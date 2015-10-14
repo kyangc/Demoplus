@@ -6,7 +6,6 @@ import com.kyangc.demoplus.adapters.HttpMethodListAdapter;
 import com.kyangc.demoplus.entities.HttpMethodEntity;
 import com.kyangc.demoplus.fragments.base.BaseFragment;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,7 +16,6 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 
 /**
  * Created by chengkangyang on 七月.29.2015
@@ -33,8 +31,6 @@ public class HttpClientFragment extends BaseFragment {
     @Bind(R.id.recyclerView)
     RecyclerView recyclerView;
 
-    Context context;
-
     HttpMethodListAdapter adapter;
 
     ArrayList<HttpMethodEntity> dataSet;
@@ -49,7 +45,6 @@ public class HttpClientFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        context = getActivity();
         initData();
         initAdapter();
     }
@@ -57,13 +52,15 @@ public class HttpClientFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_http_client, container, false);
-        ButterKnife.bind(this, view);
-        initList();
+        View view = setView(inflater, R.layout.fragment_http_client, container);
+        initViews();
         return view;
     }
 
-    private void initData() {
+    @Override
+    public void initData() {
+        super.initData();
+
         dataSet = new ArrayList<>();
         dataSet.add(new HttpMethodEntity("Get", HttpMethodEntity.GET));
         dataSet.add(new HttpMethodEntity("Post", HttpMethodEntity.POST));
@@ -72,20 +69,26 @@ public class HttpClientFragment extends BaseFragment {
         dataSet.add(new HttpMethodEntity("Delete", HttpMethodEntity.DELETE));
     }
 
-    private void initAdapter() {
-        adapter = new HttpMethodListAdapter(context, dataSet)
+    @Override
+    public void initAdapter() {
+        super.initAdapter();
+
+        adapter = new HttpMethodListAdapter(mActivity, dataSet)
                 .setOnItemClickListener(new HttpMethodListAdapter.OnItemClickListener() {
                     @Override
                     public void OnItemClick(HttpMethodEntity entity) {
                         if (entity != null) {
-                            HttpClientActivity.start(context, entity.method, entity.name);
+                            HttpClientActivity.start(mActivity, entity.method, entity.name);
                         }
                     }
                 });
     }
 
-    private void initList() {
-        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+    @Override
+    public void initViews() {
+        super.initViews();
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(mActivity));
         recyclerView.setAdapter(adapter);
     }
 }
