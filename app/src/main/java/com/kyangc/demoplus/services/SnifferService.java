@@ -1,11 +1,11 @@
 package com.kyangc.demoplus.services;
 
-import com.kyangc.demoplus.utils.L;
 import com.stericson.RootShell.RootShell;
 import com.stericson.RootShell.exceptions.RootDeniedException;
 import com.stericson.RootShell.execution.Command;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.Environment;
@@ -13,10 +13,12 @@ import android.os.IBinder;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.util.Calendar;
 import java.util.concurrent.TimeoutException;
 
 import cn.trinea.android.common.util.ShellUtils;
+import timber.log.Timber;
 
 public class SnifferService extends Service {
 
@@ -71,7 +73,6 @@ public class SnifferService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        L.e("SERVICE DESTROY");
         onTaskFinishListener = null;
     }
 
@@ -157,7 +158,7 @@ public class SnifferService extends Service {
                 if (onTaskFinishListener != null) {
                     onTaskFinishListener.onCommandRunning(line);
                 } else {
-                    L.i(line);
+                    Timber.i(line);
                 }
                 super.commandOutput(id, line);
             }
@@ -214,18 +215,25 @@ public class SnifferService extends Service {
         return Environment.getExternalStorageDirectory() + java.io.File.separator + "pcaps/";
     }
 
-    public interface OnTaskFinishListener {
+    public static abstract class OnTaskFinishListener {
 
-        int STATUS_CODE_SUCCEED = 0;
-        int STATUS_CODE_FAILED = 1;
+        static int STATUS_CODE_SUCCEED = 0;
 
-        void onCommandRunning(String line);
+        static int STATUS_CODE_FAILED = 1;
 
-        void onSnifferPrepared(int statusCode, String errorMsg);
+        WeakReference<Context> mContextWeakReference;
 
-        void onSnifferStarted(int statusCode, String errorMsg);
+        public OnTaskFinishListener(Context context) {
+            mContextWeakReference = new WeakReference<>(context);
+        }
 
-        void onSnifferStopped(int statusCode, String errorMsg);
+        public abstract void onCommandRunning(String line);
+
+        public abstract void onSnifferPrepared(int statusCode, String errorMsg);
+
+        public abstract void onSnifferStarted(int statusCode, String errorMsg);
+
+        public abstract void onSnifferStopped(int statusCode, String errorMsg);
     }
 
     public class SnifferBinder extends Binder {

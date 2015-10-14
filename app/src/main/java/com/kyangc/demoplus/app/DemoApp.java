@@ -1,9 +1,12 @@
 package com.kyangc.demoplus.app;
 
 import com.kyangc.demoplus.bus.handler.HttpRequestHandler;
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
 
 import android.app.Application;
-import android.content.Context;
+
+import timber.log.Timber;
 
 /**
  * Created by chengkangyang on 七月.29.2015
@@ -28,24 +31,48 @@ public class DemoApp extends Application {
     /**
      * 全局上下文
      */
-    private static Context context;
+    private static DemoApp mContext;
 
     /**
      * 网络请求处理器
      */
-    HttpRequestHandler httpRequestHandler;
+    public static HttpRequestHandler mHttpRequestHandler;
+
+    /**
+     * LeakCanary实例
+     */
+    private RefWatcher mRefWatcher;
 
     /**
      * 获取全局上下文
      */
-    public static Context getAppContext() {
-        return DemoApp.context;
+    public static DemoApp getAppContext() {
+        return mContext;
+    }
+
+    /**
+     * 获取RefWatcher
+     *
+     * @return RefWatcher 实例
+     */
+    public static RefWatcher getRefWatcher() {
+        return DemoApp.getAppContext().mRefWatcher;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        context = getApplicationContext();
-        httpRequestHandler = HttpRequestHandler.getInstance();
+
+        //Context
+        mContext = (DemoApp) getApplicationContext();
+
+        //Network module
+        mHttpRequestHandler = HttpRequestHandler.getInstance();
+
+        //Log setting
+        Timber.plant(new Timber.DebugTree());
+
+        //Leak watcher
+        mRefWatcher = LeakCanary.install(this);
     }
 }

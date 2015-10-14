@@ -1,5 +1,16 @@
 package com.kyangc.demoplus.activities;
 
+import com.kyangc.demoplus.R;
+import com.kyangc.demoplus.activities.base.BaseActivity;
+import com.kyangc.demoplus.adapters.SnifferResultListAdapter;
+import com.kyangc.demoplus.app.DemoApp;
+import com.kyangc.demoplus.entities.SnifferDataEntity;
+import com.kyangc.demoplus.services.SnifferService;
+import com.kyangc.demoplus.utils.EmailUtils;
+import com.kyangc.demoplus.utils.FilesUtils;
+import com.stericson.RootShell.RootShell;
+import com.stericson.RootShell.exceptions.RootDeniedException;
+
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -11,7 +22,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -22,17 +32,6 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.kyangc.demoplus.R;
-import com.kyangc.demoplus.adapters.SnifferResultListAdapter;
-import com.kyangc.demoplus.app.DemoApp;
-import com.kyangc.demoplus.entities.SnifferDataEntity;
-import com.kyangc.demoplus.services.SnifferService;
-import com.kyangc.demoplus.utils.EmailUtils;
-import com.kyangc.demoplus.utils.FilesUtils;
-import com.kyangc.demoplus.utils.L;
-import com.stericson.RootShell.RootShell;
-import com.stericson.RootShell.exceptions.RootDeniedException;
-
 import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -41,13 +40,11 @@ import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 import cn.trinea.android.common.util.FileUtils;
 import cn.trinea.android.common.util.ShellUtils;
+import timber.log.Timber;
 
-public class SnifferActivity extends AppCompatActivity implements View.OnClickListener {
-
-    public static final String TAG = "SnifferActivity";
+public class SnifferActivity extends BaseActivity implements View.OnClickListener {
 
     public static final int ROOT_STATUS_ROOTED = 0;
 
@@ -143,19 +140,9 @@ public class SnifferActivity extends AppCompatActivity implements View.OnClickLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sniffer);
 
-        //inject views
-        ButterKnife.bind(this);
-
-        //Init data
         initData();
-
-        //Init widgets
-        initWidgets();
-
-        //Check root
+        initViews();
         checkRoot();
-
-        //Update list
         updateList();
     }
 
@@ -167,45 +154,18 @@ public class SnifferActivity extends AppCompatActivity implements View.OnClickLi
         }
     }
 
-    private void initService() {
+    @Override
+    public void initData() {
+        super.initData();
 
-        serviceConnection = new ServiceConnection() {
-            @Override
-            public void onServiceConnected(ComponentName name, IBinder service) {
-                L.i("Service connected!");
-                snifferBinder = (SnifferService.SnifferBinder) service;
-                snifferBinder.setListener(getOnTaskFinishListener());
-
-                //get service status
-                if (snifferBinder.isSnifferRunning()) {
-                    displayButtonStatus(true, R.string.upper_stop);
-                    displayRunningProgress(true);
-                    displayRunningStatus(R.string.tcpdump_is_running);
-                } else {
-                    displayButtonStatus(true, R.string.upper_start);
-                    displayRunningProgress(false);
-                    displayRunningStatus(R.string.tcpdump_is_ready);
-                }
-            }
-
-            @Override
-            public void onServiceDisconnected(ComponentName name) {
-                L.i("Service disconnected!");
-                snifferBinder = null;
-            }
-        };
-
-        Intent i = new Intent(this, SnifferService.class);
-        startService(i);
-        bindService(i, serviceConnection, BIND_AUTO_CREATE);
-    }
-
-    private void initData() {
         context = this;
         displayList = new ArrayList<>();
     }
 
-    private void initWidgets() {
+    @Override
+    public void initViews() {
+        super.initViews();
+
         //toolbar
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -238,6 +198,39 @@ public class SnifferActivity extends AppCompatActivity implements View.OnClickLi
                 updateList();
             }
         });
+    }
+
+    private void initService() {
+
+        serviceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                Timber.i("Service connected!");
+                snifferBinder = (SnifferService.SnifferBinder) service;
+                snifferBinder.setListener(getOnTaskFinishListener());
+
+                //get service status
+                if (snifferBinder.isSnifferRunning()) {
+                    displayButtonStatus(true, R.string.upper_stop);
+                    displayRunningProgress(true);
+                    displayRunningStatus(R.string.tcpdump_is_running);
+                } else {
+                    displayButtonStatus(true, R.string.upper_start);
+                    displayRunningProgress(false);
+                    displayRunningStatus(R.string.tcpdump_is_ready);
+                }
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                Timber.i("Service disconnected!");
+                snifferBinder = null;
+            }
+        };
+
+        Intent i = new Intent(this, SnifferService.class);
+        startService(i);
+        bindService(i, serviceConnection, BIND_AUTO_CREATE);
     }
 
     private void displayButtonStatus(boolean isEnable, int resid) {
@@ -328,7 +321,7 @@ public class SnifferActivity extends AppCompatActivity implements View.OnClickLi
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                L.i(filePath);
+                                Timber.i(filePath);
                                 if (FileUtils.deleteFile(filePath)) {
                                     int location = -1;
                                     for (location = 0; location < displayList.size(); location++) {
@@ -354,20 +347,20 @@ public class SnifferActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     private SnifferService.OnTaskFinishListener getOnTaskFinishListener() {
-        return new SnifferService.OnTaskFinishListener() {
+        return new SnifferService.OnTaskFinishListener(this) {
             @Override
             public void onCommandRunning(String line) {
-                L.i(line);
+                Timber.i(line);
             }
 
             @Override
             public void onSnifferPrepared(int statusCode, String errorMsg) {
-                L.i("Tcpdump prepared");
+                Timber.i("Tcpdump prepared");
             }
 
             @Override
             public void onSnifferStarted(int statusCode, String errorMsg) {
-                L.i("Tcpdump started, status = " + statusCode);
+                Timber.i("Tcpdump started, status = " + statusCode);
                 displayButtonStatus(true, R.string.upper_stop);
                 displayRunningProgress(true);
                 displayRunningStatus(R.string.tcpdump_is_running);
@@ -375,7 +368,7 @@ public class SnifferActivity extends AppCompatActivity implements View.OnClickLi
 
             @Override
             public void onSnifferStopped(int statusCode, String errorMsg) {
-                L.i("Tcpdump stopped, status = " + statusCode);
+                Timber.i("Tcpdump stopped, status = " + statusCode);
                 displayButtonStatus(true, R.string.upper_start);
                 displayRunningProgress(false);
                 displayRunningStatus(R.string.tcpdump_is_ready);

@@ -4,8 +4,8 @@ import com.kyangc.demoplus.R;
 import com.kyangc.demoplus.activities.HttpClientActivity;
 import com.kyangc.demoplus.adapters.HttpMethodListAdapter;
 import com.kyangc.demoplus.entities.HttpMethodEntity;
+import com.kyangc.demoplus.fragments.base.BaseFragment;
 
-import android.app.Fragment;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,24 +24,15 @@ import butterknife.ButterKnife;
  * <p/>
  * Http client fragment
  */
-public class HttpClientFragment extends Fragment {
+public class HttpClientFragment extends BaseFragment {
 
-    /**
-     * TAG
-     */
-    public static final String TAG = "HttpClientFragment";
+    public static String TAG = HttpClientFragment.class.getSimpleName();
 
     public static final String TITLE = "Http Client Demo";
 
-    /**
-     * Widgets
-     */
     @Bind(R.id.recyclerView)
     RecyclerView recyclerView;
 
-    /**
-     * Data
-     */
     Context context;
 
     HttpMethodListAdapter adapter;

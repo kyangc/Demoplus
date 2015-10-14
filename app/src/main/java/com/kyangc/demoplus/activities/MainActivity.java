@@ -1,6 +1,7 @@
 package com.kyangc.demoplus.activities;
 
 import com.kyangc.demoplus.R;
+import com.kyangc.demoplus.activities.base.BaseActivity;
 import com.kyangc.demoplus.app.DemoApp;
 import com.kyangc.demoplus.fragments.HttpClientFragment;
 import com.kyangc.demoplus.fragments.MainFragment;
@@ -19,32 +20,19 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
-    /**
-     * TAG
-     */
-    protected static final String TAG = "MainActivity";
-
-    /**
-     * Constants
-     */
     protected static final int FRAGMENT_TYPE_HOME = 0;
 
     protected static final int FRAGMENT_TYPE_HTTP = 1;
 
-    /**
-     * Widgets
-     */
     @Bind(R.id.toolbar)
     Toolbar toolbar;
 
@@ -68,9 +56,6 @@ public class MainActivity extends AppCompatActivity {
 
     ActionBarDrawerToggle drawerToggle;
 
-    /**
-     * Data
-     */
     MainActivity context;
 
     MainFragment mainFragment;
@@ -92,19 +77,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //Bind
-        ButterKnife.bind(this);
+        initData();
+        initViews();
+        setFragment(currentFragmentType);
+    }
+
+    @Override
+    public void initData() {
+        super.initData();
 
         //Context
         context = this;
 
-        //init
-        initToolbar();
-        initDrawer();
-
         //Fragment
         fragmentManager = getFragmentManager();
-        setFragment(currentFragmentType);
     }
 
     @Override
@@ -125,10 +111,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        initFab(SettingManager.getIsFabShown());
+        displayFab(SettingManager.getIsFabShown());
     }
 
-    private void initToolbar() {
+    @Override
+    public void initViews() {
+        super.initViews();
+
+        //Toolbar
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -146,24 +136,8 @@ public class MainActivity extends AppCompatActivity {
         };
         drawerToggle.syncState();
         drawerLayout.setDrawerListener(drawerToggle);
-    }
 
-    private void initFab(boolean isShown) {
-        fab.setVisibility(isShown ? View.VISIBLE : View.GONE);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                S.show(context, fab, "我只是出来卖个萌", "滚粗", false, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //do nothing
-                    }
-                });
-            }
-        });
-    }
-
-    private void initDrawer() {
+        //Drawer
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
                     @Override
@@ -199,6 +173,21 @@ public class MainActivity extends AppCompatActivity {
                         return true;
                     }
                 });
+    }
+
+    private void displayFab(boolean isShown) {
+        fab.setVisibility(isShown ? View.VISIBLE : View.GONE);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                S.show(context, fab, "我只是出来卖个萌", "滚粗", false, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //do nothing
+                    }
+                });
+            }
+        });
     }
 
     private void setFragment(int type) {

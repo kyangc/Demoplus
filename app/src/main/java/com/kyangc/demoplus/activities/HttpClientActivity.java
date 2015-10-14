@@ -1,6 +1,7 @@
 package com.kyangc.demoplus.activities;
 
 import com.kyangc.demoplus.R;
+import com.kyangc.demoplus.activities.base.BaseActivity;
 import com.kyangc.demoplus.adapters.HttpResultListAdapter;
 import com.kyangc.demoplus.bus.event.HttpRequestEvent;
 import com.kyangc.demoplus.entities.HttpMethodEntity;
@@ -16,7 +17,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
@@ -33,7 +33,6 @@ import java.util.ArrayList;
 import java.util.Locale;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 import de.greenrobot.event.EventBus;
 
@@ -42,9 +41,7 @@ import de.greenrobot.event.EventBus;
  * <p/>
  * todo 可输入要发送的包体
  */
-public class HttpClientActivity extends AppCompatActivity {
-
-    public static final String TAG = "HttpClientActivity";
+public class HttpClientActivity extends BaseActivity {
 
     public static final String TITLE = "title";
 
@@ -93,14 +90,26 @@ public class HttpClientActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_http_client);
-        ButterKnife.bind(this);
+
         initData();
-        initToolbar(title);
-        initWidgets();
-        initList();
+        initAdapters();
+        initViews();
     }
 
-    private void initToolbar(String title) {
+    @Override
+    public void initData() {
+        context = this;
+        title = getIntent().getStringExtra(TITLE);
+        type = getIntent().getIntExtra(TYPE, -1);
+        dataSet = new ArrayList<>();
+        isHttps = SettingManager.getIsHttpsFirst();
+    }
+
+    @Override
+    public void initViews() {
+        super.initViews();
+
+        //toolbar
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -111,17 +120,7 @@ public class HttpClientActivity extends AppCompatActivity {
             }
         });
         toolbar.setTitle(title);
-    }
 
-    private void initData() {
-        context = this;
-        title = getIntent().getStringExtra(TITLE);
-        type = getIntent().getIntExtra(TYPE, -1);
-        dataSet = new ArrayList<>();
-        isHttps = SettingManager.getIsHttpsFirst();
-    }
-
-    private void initWidgets() {
         //EditText
         inputLayout.setHint("Url:");
         editText = inputLayout.getEditText();
@@ -147,13 +146,18 @@ public class HttpClientActivity extends AppCompatActivity {
                 postEvent();
             }
         });
-    }
 
-    private void initList() {
-        adapter = new HttpResultListAdapter(context);
-        adapter.setDataSet(dataSet);
+        //List
         rvResult.setLayoutManager(new LinearLayoutManager(context));
         rvResult.setAdapter(adapter);
+    }
+
+    @Override
+    public void initAdapters() {
+        super.initAdapters();
+
+        adapter = new HttpResultListAdapter(context);
+        adapter.setDataSet(dataSet);
     }
 
     private ResponseHandlerInterface getResponseHandler() {

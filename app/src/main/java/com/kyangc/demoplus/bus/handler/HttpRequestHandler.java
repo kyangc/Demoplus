@@ -3,7 +3,6 @@ package com.kyangc.demoplus.bus.handler;
 import com.kyangc.demoplus.app.DemoApp;
 import com.kyangc.demoplus.bus.event.HttpRequestEvent;
 import com.kyangc.demoplus.entities.HttpMethodEntity;
-import com.kyangc.demoplus.utils.L;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpRequest;
 import com.loopj.android.http.ResponseHandlerInterface;
@@ -16,6 +15,7 @@ import cz.msebera.android.httpclient.protocol.HttpContext;
 import de.greenrobot.event.EventBus;
 import de.greenrobot.event.Subscribe;
 import de.greenrobot.event.ThreadMode;
+import timber.log.Timber;
 
 /**
  * Created by chengkangyang on 七月.30.2015
@@ -51,12 +51,12 @@ public class HttpRequestHandler {
     }
 
     public void register() {
-        L.d(TAG, "Handler registered!");
+        Timber.d(TAG, "Handler registered!");
         EventBus.getDefault().register(this);
     }
 
     public void unregister() {
-        L.d(TAG, "Handler unregistered!");
+        Timber.d(TAG, "Handler unregistered!");
         EventBus.getDefault().unregister(this);
     }
 

@@ -1,20 +1,19 @@
 package com.kyangc.demoplus.activities;
 
 import com.kyangc.demoplus.R;
+import com.kyangc.demoplus.activities.base.BaseActivity;
 import com.kyangc.demoplus.utils.S;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import butterknife.Bind;
-import butterknife.ButterKnife;
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class AboutActivity extends AppCompatActivity {
-
-    public static final String TAG = "AboutActivity";
+public class AboutActivity extends BaseActivity {
 
     @Bind(R.id.toolbar)
     Toolbar toolbar;
@@ -22,19 +21,20 @@ public class AboutActivity extends AppCompatActivity {
     @Bind(R.id.ivAvatar)
     CircleImageView avatar;
 
-    AboutActivity context;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about);
-        context = this;
-        ButterKnife.bind(this);
-        initToolbar();
-        initAvatar();
+
+        //Init views
+        initViews();
     }
 
-    private void initToolbar() {
+    @Override
+    public void initViews() {
+        super.initViews();
+
+        //Toolbar
         setSupportActionBar(toolbar);
         getSupportActionBar().setHomeButtonEnabled(true); //设置返回键可用
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -44,18 +44,21 @@ public class AboutActivity extends AppCompatActivity {
                 finish();
             }
         });
-    }
 
-    private void initAvatar() {
+        //Avatar
         avatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                S.show(context, avatar, "BAZINGA!", "CANCEL", false, new View.OnClickListener() {
+                S.show(mContext, avatar, "BAZINGA!", "CANCEL", false, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                     }
                 });
             }
         });
+    }
+
+    public static void start(Context context) {
+        context.startActivity(new Intent(context, AboutActivity.class));
     }
 }

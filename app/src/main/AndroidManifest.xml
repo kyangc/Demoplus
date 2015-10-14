@@ -27,24 +27,31 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".activities.SettingsActivity"
-            android:label="@string/title_activity_settings" />
+            android:label="@string/title_activity_settings"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.AboutActivity"
-            android:label="@string/title_activity_about" />
+            android:label="@string/title_activity_about"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.HttpClientActivity"
-            android:label="@string/title_activity_http_client" />
+            android:label="@string/title_activity_http_client"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.SnifferActivity"
-            android:label="@string/title_activity_sniffer" />
+            android:label="@string/title_activity_sniffer"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.SnifferDataActivity"
-            android:label="@string/title_activity_sniffer_data" />
+            android:label="@string/title_activity_sniffer_data"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.SwipeListItemActivity"
-            android:label="@string/title_activity_swipe_list_item" />
+            android:label="@string/title_activity_swipe_list_item"
+            android:screenOrientation="portrait" />
 
         <!-- Services-->
         <service

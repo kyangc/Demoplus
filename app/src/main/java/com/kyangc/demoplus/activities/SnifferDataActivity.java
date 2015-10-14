@@ -6,7 +6,6 @@ import com.kyangc.demoplus.pcap.EthernetFrameList;
 import com.kyangc.demoplus.pcap.LibpcapParser;
 import com.kyangc.demoplus.pcap.data.Packet;
 import com.kyangc.demoplus.pcap.header.EthernetHeader;
-import com.kyangc.demoplus.utils.L;
 import com.kyangc.demoplus.utils.T;
 
 import android.content.Context;
@@ -29,10 +28,9 @@ import java.lang.reflect.InvocationTargetException;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 public class SnifferDataActivity extends AppCompatActivity {
-
-    public static final String TAG = "SnifferDataActivity";
 
     public static final String INTENT_KEY_FILE_NAME = "file_name";
 
@@ -127,7 +125,7 @@ public class SnifferDataActivity extends AppCompatActivity {
                     T.showShort(context.get(), "Error occurred");
                 } else {
                     for (Packet<EthernetHeader> packet : packets) {
-                        L.i(packet.toString());
+                        Timber.i(packet.toString());
                     }
                 }
             }
