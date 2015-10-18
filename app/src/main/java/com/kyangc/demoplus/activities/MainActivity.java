@@ -157,6 +157,9 @@ public class MainActivity extends BaseActivity {
                                 i = new Intent(context, SwipeListItemActivity.class);
                                 context.startActivity(i);
                                 break;
+                            case R.id.fast_gallery:
+                                GalleryActivity.start(MainActivity.this);
+                                break;
                             case R.id.about:
                                 i = new Intent(context, AboutActivity.class);
                                 context.startActivity(i);

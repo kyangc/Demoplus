@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
 /**
  * Created by chengkangyang on 九月.30.2015
@@ -41,8 +40,6 @@ public class BaseActivity extends AppCompatActivity {
         mContext = this;
         mIntent = getIntent();
         mClass = this.getClass();
-
-        Timber.i(mClass.getSimpleName());
     }
 
     @Override
@@ -54,34 +51,40 @@ public class BaseActivity extends AppCompatActivity {
         mIntent = null;
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
     /**
      * 初始化Activity显示需要的数据
      */
-    public void initData() {
+    protected void initData() {
     }
 
     /**
      * 初始化Activity中的控件
      */
-    public void initViews() {
+    protected void initViews() {
         ButterKnife.bind(this);
     }
 
     /**
      * 初始化Activity中的广播接收器
      */
-    public void initReceivers() {
+    protected void initReceivers() {
     }
 
     /**
      * 初始化Activity中的Fragment
      */
-    public void initFragments() {
+    protected void initFragments() {
     }
 
     /**
      * 初始化Activity中的适配器
      */
-    public void initAdapters() {
+    protected void initAdapters() {
     }
 }

@@ -1,6 +1,8 @@
 package com.kyangc.demoplus.app;
 
 import com.kyangc.demoplus.bus.handler.HttpRequestHandler;
+import com.kyangc.demoplus.image.ImageLoaderImpl;
+import com.kyangc.demoplus.utils.SysUtils;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
@@ -74,5 +76,11 @@ public class DemoApp extends Application {
 
         //Leak watcher
         mRefWatcher = LeakCanary.install(this);
+
+        //Image loader
+        ImageLoaderImpl.getInstance().init(getApplicationContext());
+
+        //Scan media
+        SysUtils.sendMediaScanRequest(mContext);
     }
 }

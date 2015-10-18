@@ -24,6 +24,11 @@
                 android:checkable="true"
                 android:icon="@drawable/ic_list"
                 android:title="Swipe'n Drag Demo" />
+            <item
+                android:id="@+id/fast_gallery"
+                android:checkable="true"
+                android:icon="@drawable/ic_gallery"
+                android:title="Fast gallery" />
         </menu>
     </item>
 
