@@ -25,4 +25,14 @@
     <string name="title_activity_sniffer_data">SnifferDataActivity</string>
     <string name="title_activity_swipe_list_item">SwipeListItemActivity</string>
     <string name="title_activity_rx_java">RxJavaActivity</string>
+
+    <string-array name="tab_icons">
+        <item>@drawable/selector_button_logo</item>
+        <item>@drawable/ic_gallery</item>
+        <item>@drawable/ic_get</item>
+        <item>@drawable/ic_home</item>
+        <item>@drawable/ic_list</item>
+        <item>@drawable/ic_face</item>
+    </string-array>
+
 </resources>

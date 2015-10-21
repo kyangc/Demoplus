@@ -25,8 +25,8 @@
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/ivAvatar"
-            android:layout_width="130dp"
-            android:layout_height="130dp"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="20dp"
@@ -47,19 +47,8 @@
             android:layout_marginBottom="20dp"
             android:text="Demo+"
             android:textColor="@color/black"
-            android:textSize="24sp"
+            android:textSize="27sp"
             android:textStyle="bold|italic" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/tvAppName"
-            android:layout_centerHorizontal="true"
-            android:gravity="center"
-            android:text="Try to build a platform aiming at displaying TECHNIQUES.\nNow we have these features:\n* Material Design\n* Async Http Client\n* EvnetBus\n* ButterKnife\n..."
-            android:textColor="@color/light_black"
-            android:textSize="14sp"
-            android:textStyle="italic" />
 
         <TextView
             android:id="@+id/tvContact"

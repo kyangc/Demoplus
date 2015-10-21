@@ -21,4 +21,21 @@
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="HorizontalTabPanelStyle">
+        <item name="android:layout_height">48dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="button_count">0</item>
+        <item name="panel_background">@drawable/selector_tab_background</item>
+        <item name="show_divider">true</item>
+        <item name="keep_state">true</item>
+        <item name="divider_width">1px</item>
+        <item name="divider_color">@color/grey</item>
+        <item name="divider_margin">10dp</item>
+    </style>
+
+    <style name="HorizontalTabPanelStyle.About">
+        <item name="button_count">4</item>
+        <item name="button_icon_list">@array/tab_icons</item>
+    </style>
 </resources>

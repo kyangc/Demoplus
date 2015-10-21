@@ -9,11 +9,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import java.util.Collection;
-import java.util.Set;
 import java.util.TreeMap;
-
-import timber.log.Timber;
 
 /**
  * Created by chengkangyang on 十月.14.2015
@@ -60,35 +56,6 @@ public class GalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public TreeMap<Long, ILocalImageLoader.LocalImageEntity> getData() {
         return mData;
-    }
-
-    public void addItem(ILocalImageLoader.LocalImageEntity item) {
-        if (mData.containsKey(item.getId())) {
-            String thumbnailPath = mData.get(item.getId()).getThumbPath();
-            if (thumbnailPath == null || !thumbnailPath.equals(item.getThumbPath())) {
-                mData.get(item.getId()).setThumbPath(item.getThumbPath());
-                notifyDataSetChanged();
-                Timber.i("Update photo:" + item.toString());
-            }
-        } else {
-            mData.put(item.getId(), item);
-            notifyDataSetChanged();
-            Timber.i("Add item:" + item.toString());
-        }
-    }
-
-    public void addItems(Collection<ILocalImageLoader.LocalImageEntity> items) {
-        for (ILocalImageLoader.LocalImageEntity item : items) {
-            mData.put(item.getId(), item);
-        }
-        notifyDataSetChanged();
-    }
-
-    public void addItems(Set<ILocalImageLoader.LocalImageEntity> items) {
-        for (ILocalImageLoader.LocalImageEntity item : items) {
-            mData.put(item.getId(), item);
-        }
-        notifyDataSetChanged();
     }
 
     public static class ItemViewHolder extends RecyclerView.ViewHolder {

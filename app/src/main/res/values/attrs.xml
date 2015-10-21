@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="HorizontalTabPanel">
+        <attr name="button_count" format="integer" />
+        <attr name="button_icon_list" format="reference" />
+        <attr name="panel_background" format="reference" />
+        <attr name="show_divider" format="boolean" />
+        <attr name="keep_state" format="boolean" />
+        <attr name="divider_width" format="dimension" />
+        <attr name="divider_color" format="color" />
+        <attr name="divider_margin" format="dimension" />
+    </declare-styleable>
+</resources>

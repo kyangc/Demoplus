@@ -47,7 +47,6 @@ public class GalleryActivity extends BaseActivity {
         initData();
         initAdapters();
         initViews();
-        //displayAllPhotos();
         queryAllLocalPhotos();
     }
 
@@ -97,69 +96,6 @@ public class GalleryActivity extends BaseActivity {
         context.startActivity(new Intent(context, GalleryActivity.class));
     }
 
-//    private void displayAllPhotos() {
-//        subscription = Observable.create(
-//                new Observable.OnSubscribe<TreeMap<Long, GalleryItem>>() {
-//                    @Override
-//                    public void call(Subscriber<? super TreeMap<Long, GalleryItem>> subscriber) {
-//                        subscriber.onNext(GalleryUtils.getPhotoList());
-//                    }
-//                })
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .flatMap(new Func1<TreeMap<Long, GalleryItem>, Observable<GalleryItem>>() {
-//                    @Override
-//                    public Observable<GalleryItem> call(
-//                            TreeMap<Long, GalleryItem> longGalleryItemTreeMap) {
-//                        mGalleryAdapter.addItems(longGalleryItemTreeMap.values());
-//                        return Observable.from(longGalleryItemTreeMap.values());
-//                    }
-//                })
-//                .onBackpressureBuffer()
-//                .filter(new Func1<GalleryItem, Boolean>() {
-//                    @Override
-//                    public Boolean call(GalleryItem galleryItem) {
-//                        return galleryItem.getThumbnailPath() == null;
-//                    }
-//                })
-//                .buffer(3000, 0, TimeUnit.MILLISECONDS)
-//                .map(new Func1<List<GalleryItem>, TreeMap<Long, GalleryItem>>() {
-//                    @Override
-//                    public TreeMap<Long, GalleryItem> call(List<GalleryItem> items) {
-//                        if (items != null && items.size() > 0) {
-//                            for (GalleryItem item : items) {
-//                                Timber.i("Compressed photo :" + item.toString());
-//                                GalleryUtils.prepareThumbnail(GalleryActivity.this, item.getId());
-//                            }
-//                            return GalleryUtils.getPhotoList(GalleryActivity.this);
-//                        } else {
-//                            return null;
-//                        }
-//                    }
-//                })
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribe(new Subscriber<TreeMap<Long, GalleryItem>>() {
-//                    @Override
-//                    public void onCompleted() {
-//                        Timber.i("Finished");
-//                    }
-//
-//                    @Override
-//                    public void onError(Throwable e) {
-//                        Timber.e(e.toString());
-//                    }
-//
-//                    @Override
-//                    public void onNext(TreeMap<Long, GalleryItem> longGalleryItemTreeMap) {
-//                        if (longGalleryItemTreeMap != null && longGalleryItemTreeMap.size() > 0) {
-//                            for (GalleryItem item : longGalleryItemTreeMap.values()) {
-//                                mGalleryAdapter.addItem(item);
-//                            }
-//                        }
-//                    }
-//                });
-//    }
-
     private void queryAllLocalPhotos() {
         Observable
                 .create(new Observable.OnSubscribe<TreeMap<Long, ILocalImageLoader.LocalImageEntity>>() {
@@ -177,69 +113,5 @@ public class GalleryActivity extends BaseActivity {
                         mGalleryAdapter.notifyDataSetChanged();
                     }
                 });
-    }
-
-    public static class GalleryItem {
-
-        public GalleryItem() {
-        }
-
-        private String originPath;
-
-        private String thumbnailPath;
-
-        private Long id;
-
-        private Long modifiedDate;
-
-        public GalleryItem setId(Long id) {
-            this.id = id;
-            return this;
-        }
-
-        public Long getModifiedDate() {
-            return modifiedDate;
-        }
-
-        public GalleryItem setModifiedDate(Long modifiedDate) {
-            this.modifiedDate = modifiedDate;
-            return this;
-        }
-
-        public String getOriginPath() {
-            return originPath;
-        }
-
-        public GalleryItem setOriginPath(String originPath) {
-            this.originPath = originPath;
-            return this;
-        }
-
-        public String getThumbnailPath() {
-            return thumbnailPath;
-        }
-
-        public GalleryItem setThumbnailPath(String thumbnailPath) {
-            this.thumbnailPath = thumbnailPath;
-            return this;
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public String getPath() {
-            return thumbnailPath == null ? originPath : thumbnailPath;
-        }
-
-        @Override
-        public String toString() {
-            return "GalleryItem{" +
-                    "originPath='" + originPath + '\'' +
-                    ", thumbnailPath='" + thumbnailPath + '\'' +
-                    ", id=" + id +
-                    ", modifiedDate=" + modifiedDate +
-                    '}';
-        }
     }
 }
