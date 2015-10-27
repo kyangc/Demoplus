@@ -1,13 +1,13 @@
 package com.kyangc.demoplus.activities;
 
 import com.kyangc.demoplus.R;
-import com.kyangc.demoplus.activities.base.BaseActivity;
+import com.kyangc.developkit.base.BaseActivity;
 import com.kyangc.demoplus.adapters.SnifferResultListAdapter;
 import com.kyangc.demoplus.app.DemoApp;
 import com.kyangc.demoplus.entities.SnifferDataEntity;
 import com.kyangc.demoplus.services.SnifferService;
-import com.kyangc.demoplus.utils.EmailUtils;
-import com.kyangc.demoplus.utils.FilesUtils;
+import com.kyangc.developkit.utils.EmailUtils;
+import com.kyangc.developkit.utils.FilesUtils;
 import com.stericson.RootShell.RootShell;
 import com.stericson.RootShell.exceptions.RootDeniedException;
 

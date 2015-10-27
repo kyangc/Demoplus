@@ -1,7 +1,7 @@
 package com.kyangc.demoplus.views;
 
 import com.kyangc.demoplus.R;
-import com.kyangc.demoplus.utils.DensityUtils;
+import com.kyangc.developkit.utils.DensityUtils;
 
 import android.content.Context;
 import android.content.res.TypedArray;

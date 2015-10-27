@@ -1,8 +1,7 @@
 package com.kyangc.demoplus.activities;
 
 import com.kyangc.demoplus.R;
-import com.kyangc.demoplus.activities.base.BaseActivity;
-import com.kyangc.demoplus.utils.S;
+import com.kyangc.developkit.base.BaseActivity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -42,18 +41,6 @@ public class AboutActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
                 finish();
-            }
-        });
-
-        //Avatar
-        avatar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                S.show(mContext, avatar, "BAZINGA!", "CANCEL", false, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                    }
-                });
             }
         });
     }

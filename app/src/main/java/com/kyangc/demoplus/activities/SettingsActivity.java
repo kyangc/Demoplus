@@ -1,7 +1,7 @@
 package com.kyangc.demoplus.activities;
 
 import com.kyangc.demoplus.R;
-import com.kyangc.demoplus.activities.base.BaseActivity;
+import com.kyangc.developkit.base.BaseActivity;
 import com.kyangc.demoplus.settings.SettingManager;
 
 import android.os.Bundle;

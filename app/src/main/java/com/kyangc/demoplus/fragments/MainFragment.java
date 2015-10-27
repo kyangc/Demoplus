@@ -1,7 +1,7 @@
 package com.kyangc.demoplus.fragments;
 
 import com.kyangc.demoplus.R;
-import com.kyangc.demoplus.fragments.base.BaseFragment;
+import com.kyangc.developkit.base.BaseFragment;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;

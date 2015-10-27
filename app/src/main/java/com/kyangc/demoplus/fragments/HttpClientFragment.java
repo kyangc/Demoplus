@@ -4,7 +4,7 @@ import com.kyangc.demoplus.R;
 import com.kyangc.demoplus.activities.HttpClientActivity;
 import com.kyangc.demoplus.adapters.HttpMethodListAdapter;
 import com.kyangc.demoplus.entities.HttpMethodEntity;
-import com.kyangc.demoplus.fragments.base.BaseFragment;
+import com.kyangc.developkit.base.BaseFragment;
 
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;

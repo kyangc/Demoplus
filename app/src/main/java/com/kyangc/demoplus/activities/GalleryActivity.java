@@ -1,10 +1,9 @@
 package com.kyangc.demoplus.activities;
 
 import com.kyangc.demoplus.R;
-import com.kyangc.demoplus.activities.base.BaseActivity;
 import com.kyangc.demoplus.adapters.GalleryAdapter;
-import com.kyangc.demoplus.image.ILocalImageLoader;
-import com.kyangc.demoplus.utils.GalleryUtils;
+import com.kyangc.developkit.base.BaseActivity;
+import com.kyangc.developkit.image.internal.ILocalImageLoader;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,12 +16,7 @@ import android.view.View;
 import java.util.TreeMap;
 
 import butterknife.Bind;
-import rx.Observable;
-import rx.Subscriber;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class GalleryActivity extends BaseActivity {
@@ -47,7 +41,8 @@ public class GalleryActivity extends BaseActivity {
         initData();
         initAdapters();
         initViews();
-        queryAllLocalPhotos();
+
+        // TODO: 15/10/27 Add back gallery
     }
 
     @Override
@@ -94,24 +89,5 @@ public class GalleryActivity extends BaseActivity {
 
     public static void start(Context context) {
         context.startActivity(new Intent(context, GalleryActivity.class));
-    }
-
-    private void queryAllLocalPhotos() {
-        Observable
-                .create(new Observable.OnSubscribe<TreeMap<Long, ILocalImageLoader.LocalImageEntity>>() {
-                    @Override
-                    public void call(Subscriber<? super TreeMap<Long, ILocalImageLoader.LocalImageEntity>> subscriber) {
-                        subscriber.onNext(GalleryUtils.getPhotoList());
-                    }
-                })
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<TreeMap<Long, ILocalImageLoader.LocalImageEntity>>() {
-                    @Override
-                    public void call(TreeMap<Long, ILocalImageLoader.LocalImageEntity> longGalleryItemTreeMap) {
-                        GalleryActivity.this.mGalleryItemMap.putAll(longGalleryItemTreeMap);
-                        mGalleryAdapter.notifyDataSetChanged();
-                    }
-                });
     }
 }

@@ -1,6 +1,6 @@
 package com.kyangc.demoplus.settings;
 
-import com.kyangc.demoplus.utils.SPUtils;
+import com.kyangc.developkit.utils.SPUtils;
 
 /**
  * Created by chengkangyang on 七月.29.2015

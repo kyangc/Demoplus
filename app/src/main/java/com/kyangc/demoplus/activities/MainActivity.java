@@ -1,13 +1,12 @@
 package com.kyangc.demoplus.activities;
 
 import com.kyangc.demoplus.R;
-import com.kyangc.demoplus.activities.base.BaseActivity;
 import com.kyangc.demoplus.app.DemoApp;
 import com.kyangc.demoplus.fragments.HttpClientFragment;
 import com.kyangc.demoplus.fragments.MainFragment;
 import com.kyangc.demoplus.settings.SettingManager;
-import com.kyangc.demoplus.utils.S;
-import com.kyangc.demoplus.utils.T;
+import com.kyangc.developkit.base.BaseActivity;
+import com.kyangc.developkit.utils.T;
 
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -180,17 +179,6 @@ public class MainActivity extends BaseActivity {
 
     private void displayFab(boolean isShown) {
         fab.setVisibility(isShown ? View.VISIBLE : View.GONE);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                S.show(context, fab, "我只是出来卖个萌", "滚粗", false, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //do nothing
-                    }
-                });
-            }
-        });
     }
 
     private void setFragment(int type) {

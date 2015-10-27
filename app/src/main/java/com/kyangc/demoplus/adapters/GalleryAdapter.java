@@ -1,7 +1,7 @@
 package com.kyangc.demoplus.adapters;
 
-import com.kyangc.demoplus.image.ILocalImageLoader;
-import com.kyangc.demoplus.image.ImageLoaderImpl;
+import com.kyangc.developkit.image.internal.ILocalImageLoader;
+import com.kyangc.developkit.image.impl.ImageLoaderImpl;
 import com.kyangc.demoplus.views.GalleryItemView;
 
 import android.content.Context;

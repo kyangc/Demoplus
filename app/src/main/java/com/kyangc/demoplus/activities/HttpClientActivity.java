@@ -1,14 +1,13 @@
 package com.kyangc.demoplus.activities;
 
 import com.kyangc.demoplus.R;
-import com.kyangc.demoplus.activities.base.BaseActivity;
+import com.kyangc.developkit.base.BaseActivity;
 import com.kyangc.demoplus.adapters.HttpResultListAdapter;
 import com.kyangc.demoplus.bus.event.HttpRequestEvent;
 import com.kyangc.demoplus.entities.HttpMethodEntity;
 import com.kyangc.demoplus.entities.HttpResultEntity;
 import com.kyangc.demoplus.network.Constants;
 import com.kyangc.demoplus.settings.SettingManager;
-import com.kyangc.demoplus.utils.S;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.ResponseHandlerInterface;
@@ -183,13 +182,7 @@ public class HttpClientActivity extends BaseActivity {
 
             @Override
             public void onRetry(int retryNo) {
-                S.show(context, rvResult,
-                        String.format("Request is retried, retry no. %d", retryNo),
-                        new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                            }
-                        });
+
             }
         };
     }
