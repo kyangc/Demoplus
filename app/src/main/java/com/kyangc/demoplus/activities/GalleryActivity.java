@@ -3,6 +3,7 @@ package com.kyangc.demoplus.activities;
 import com.kyangc.demoplus.R;
 import com.kyangc.demoplus.adapters.GalleryAdapter;
 import com.kyangc.developkit.base.BaseActivity;
+import com.kyangc.developkit.helper.GalleryHelper;
 import com.kyangc.developkit.image.internal.ILocalImageLoader;
 
 import android.content.Context;
@@ -13,7 +14,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import java.util.TreeMap;
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.Bind;
 import rx.Subscription;
@@ -27,9 +29,11 @@ public class GalleryActivity extends BaseActivity {
     @Bind(R.id.rvGallery)
     RecyclerView rvGallery;
 
-    TreeMap<Long, ILocalImageLoader.LocalImageEntity> mGalleryItemMap;
+    List<ILocalImageLoader.LocalImageEntity> mGalleryItemList;
 
     GalleryAdapter mGalleryAdapter;
+
+    GalleryHelper mGalleryHelper;
 
     Subscription subscription;
 
@@ -41,8 +45,6 @@ public class GalleryActivity extends BaseActivity {
         initData();
         initAdapters();
         initViews();
-
-        // TODO: 15/10/27 Add back gallery
     }
 
     @Override
@@ -57,7 +59,8 @@ public class GalleryActivity extends BaseActivity {
     @Override
     public void initData() {
         super.initData();
-        mGalleryItemMap = new TreeMap<>();
+        mGalleryItemList = new ArrayList<>();
+        mGalleryHelper = GalleryHelper.getInstance().init(this);
     }
 
     @Override
@@ -84,7 +87,7 @@ public class GalleryActivity extends BaseActivity {
     public void initAdapters() {
         super.initAdapters();
         mGalleryAdapter = new GalleryAdapter(this);
-        mGalleryAdapter.setData(mGalleryItemMap);
+        mGalleryAdapter.setData(mGalleryItemList);
     }
 
     public static void start(Context context) {

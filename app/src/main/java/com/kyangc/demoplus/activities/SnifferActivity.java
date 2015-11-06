@@ -1,11 +1,10 @@
 package com.kyangc.demoplus.activities;
 
 import com.kyangc.demoplus.R;
-import com.kyangc.developkit.base.BaseActivity;
 import com.kyangc.demoplus.adapters.SnifferResultListAdapter;
-import com.kyangc.demoplus.app.DemoApp;
 import com.kyangc.demoplus.entities.SnifferDataEntity;
 import com.kyangc.demoplus.services.SnifferService;
+import com.kyangc.developkit.base.BaseActivity;
 import com.kyangc.developkit.utils.EmailUtils;
 import com.kyangc.developkit.utils.FilesUtils;
 import com.stericson.RootShell.RootShell;
@@ -300,7 +299,7 @@ public class SnifferActivity extends BaseActivity implements View.OnClickListene
                 if (file.exists()) {
                     EmailUtils.sendEmailWithAttach(
                             context,
-                            DemoApp.EMAIL,
+                            SnifferActivity.this.getString(R.string.my_email),
                             "New sniffer data:" + fileName,
                             "New sniffer data:" + fileName,
                             file);

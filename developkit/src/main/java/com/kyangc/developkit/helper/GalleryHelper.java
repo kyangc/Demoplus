@@ -28,7 +28,7 @@ import timber.log.Timber;
  */
 public class GalleryHelper implements ILocalImageLoader {
 
-    public static final String TAG = "Gallery Helper";
+    public static final String TAG = GalleryHelper.class.getClass().getSimpleName();
 
     private final static String[] PROJECTION_PIC = {
             MediaStore.Images.Media._ID,

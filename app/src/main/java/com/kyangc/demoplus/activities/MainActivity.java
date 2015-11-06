@@ -1,7 +1,7 @@
 package com.kyangc.demoplus.activities;
 
 import com.kyangc.demoplus.R;
-import com.kyangc.demoplus.app.DemoApp;
+import com.kyangc.demoplus.app.Constants;
 import com.kyangc.demoplus.fragments.HttpClientFragment;
 import com.kyangc.demoplus.fragments.MainFragment;
 import com.kyangc.demoplus.settings.SettingManager;
@@ -98,8 +98,8 @@ public class MainActivity extends BaseActivity {
             drawerLayout.closeDrawer(navigationView);
         } else {
             long delta = System.currentTimeMillis() - firstTimePressBack;
-            if (delta > DemoApp.QUIT_INTERVAL) {
-                T.show(this, "Press BACK again to quit", (int) (DemoApp.QUIT_INTERVAL * 0.5));
+            if (delta > Constants.QUIT_INTERVAL) {
+                T.show(this, "Press BACK again to quit", (int) (Constants.QUIT_INTERVAL * 0.5));
                 firstTimePressBack = System.currentTimeMillis();
             } else {
                 this.finish();
@@ -110,7 +110,7 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        displayFab(SettingManager.getIsFabShown());
+        displayFab(SettingManager.getIsFabShown(this));
     }
 
     @Override

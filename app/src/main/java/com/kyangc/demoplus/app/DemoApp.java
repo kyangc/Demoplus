@@ -1,26 +1,40 @@
 package com.kyangc.demoplus.app;
 
+import com.kyangc.demoplus.bus.handler.HttpRequestHandler;
 import com.kyangc.developkit.base.BaseApp;
+import com.kyangc.developkit.image.impl.ImageLoaderImpl;
+import com.squareup.leakcanary.LeakCanary;
+import com.squareup.leakcanary.RefWatcher;
+
+import timber.log.Timber;
 
 /**
  * Created by chengkangyang on 七月.29.2015
  */
 public class DemoApp extends BaseApp {
 
-    /**
-     * 两次按下返回键退出的间隔
-     */
-    public static final Integer QUIT_INTERVAL = 2 * 1000;
+    protected static RefWatcher mRefWatcher;
 
-    /**
-     * 我的邮箱
-     */
-    public static final String EMAIL = "kyangc@gmail.com";
+    protected HttpRequestHandler mHttpRequestHandler;
+
+    public static RefWatcher getRefWatcher() {
+        return mRefWatcher;
+    }
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        mContext = this;
+        //Log setting
+        Timber.plant(new Timber.DebugTree());
+
+        //Leak watcher
+        mRefWatcher = LeakCanary.install(this);
+
+        //Image loader
+        ImageLoaderImpl.getInstance().init(getApplicationContext());
+
+        //Http request handler
+        mHttpRequestHandler = HttpRequestHandler.getInstance();
     }
 }

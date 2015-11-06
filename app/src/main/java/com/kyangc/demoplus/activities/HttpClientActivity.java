@@ -101,7 +101,7 @@ public class HttpClientActivity extends BaseActivity {
         title = getIntent().getStringExtra(TITLE);
         type = getIntent().getIntExtra(TYPE, -1);
         dataSet = new ArrayList<>();
-        isHttps = SettingManager.getIsHttpsFirst();
+        isHttps = SettingManager.getIsHttpsFirst(this);
     }
 
     @Override

@@ -1,8 +1,8 @@
 package com.kyangc.demoplus.activities;
 
 import com.kyangc.demoplus.R;
-import com.kyangc.developkit.base.BaseActivity;
 import com.kyangc.demoplus.settings.SettingManager;
+import com.kyangc.developkit.base.BaseActivity;
 
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -48,9 +48,9 @@ public class SettingsActivity extends BaseActivity
         });
 
         //Switch
-        aSwitch.setChecked(SettingManager.getIsFabShown());
+        aSwitch.setChecked(SettingManager.getIsFabShown(this));
         aSwitch.setOnCheckedChangeListener(this);
-        httpSwitch.setChecked(SettingManager.getIsHttpsFirst());
+        httpSwitch.setChecked(SettingManager.getIsHttpsFirst(this));
         httpSwitch.setOnCheckedChangeListener(this);
     }
 
@@ -58,10 +58,10 @@ public class SettingsActivity extends BaseActivity
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         switch (buttonView.getId()) {
             case R.id.switchButton:
-                SettingManager.setIsFabShown(isChecked);
+                SettingManager.setIsFabShown(this, isChecked);
                 break;
             case R.id.httpsSwitch:
-                SettingManager.setIsHttpFirst(isChecked);
+                SettingManager.setIsHttpFirst(this, isChecked);
                 break;
             default:
                 break;

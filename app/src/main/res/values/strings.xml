@@ -25,6 +25,7 @@
     <string name="title_activity_sniffer_data">SnifferDataActivity</string>
     <string name="title_activity_swipe_list_item">SwipeListItemActivity</string>
     <string name="title_activity_rx_java">RxJavaActivity</string>
+    <string name="my_email">kyangc@gmail.com</string>
 
     <string-array name="tab_icons">
         <item>@drawable/selector_button_logo</item>

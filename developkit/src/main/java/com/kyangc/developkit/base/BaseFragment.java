@@ -16,8 +16,6 @@ public class BaseFragment extends Fragment {
 
     public Activity mActivity;
 
-    public String TAG;
-
     public Class mClass;
 
     public View mView;
@@ -25,17 +23,13 @@ public class BaseFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         mActivity = getActivity();
-        TAG = this.getClass().getSimpleName();
         mClass = this.getClass();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        BaseApp.getRefWatcher().watch(this);
-
         ButterKnife.unbind(this);
         mActivity = null;
         mClass = null;

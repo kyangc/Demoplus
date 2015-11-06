@@ -14,8 +14,6 @@ import butterknife.ButterKnife;
  */
 public class BaseActivity extends AppCompatActivity {
 
-    public String TAG;
-
     public Class mClass;
 
     public BaseActivity mContext;
@@ -26,7 +24,6 @@ public class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        TAG = this.getClass().getSimpleName();
         mContext = this;
         mIntent = getIntent();
         mClass = this.getClass();
