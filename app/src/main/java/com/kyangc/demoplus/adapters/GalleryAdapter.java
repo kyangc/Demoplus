@@ -1,6 +1,6 @@
 package com.kyangc.demoplus.adapters;
 
-import com.kyangc.demoplus.views.GalleryItemView;
+import com.kyangc.demoplus.views.SquareImageView;
 import com.kyangc.developkit.helper.GalleryHelper;
 import com.kyangc.developkit.image.internal.ILocalImageLoader;
 
@@ -29,7 +29,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new ItemViewHolder(new GalleryItemView(mContext));
+        return new ItemViewHolder(new SquareImageView(mContext));
     }
 
     @Override
@@ -56,9 +56,9 @@ public class GalleryAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public static class ItemViewHolder extends RecyclerView.ViewHolder {
 
-        GalleryItemView photo;
+        SquareImageView photo;
 
-        public ItemViewHolder(GalleryItemView itemView) {
+        public ItemViewHolder(SquareImageView itemView) {
             super(itemView);
             photo = itemView;
         }

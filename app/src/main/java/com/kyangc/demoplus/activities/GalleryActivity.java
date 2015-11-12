@@ -14,12 +14,10 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.Bind;
 import rx.Subscription;
-import timber.log.Timber;
 
 public class GalleryActivity extends BaseActivity {
 
@@ -51,7 +49,6 @@ public class GalleryActivity extends BaseActivity {
     protected void onDestroy() {
         super.onDestroy();
         if (subscription != null && !subscription.isUnsubscribed()) {
-            Timber.i("Unsubscription");
             subscription.unsubscribe();
         }
     }
@@ -59,8 +56,8 @@ public class GalleryActivity extends BaseActivity {
     @Override
     public void initData() {
         super.initData();
-        mGalleryItemList = new ArrayList<>();
         mGalleryHelper = GalleryHelper.getInstance().init(this);
+        mGalleryItemList = mGalleryHelper.getLocalPhotoList();
     }
 
     @Override
