@@ -73,6 +73,7 @@ public class AboutActivity extends BaseActivity {
                             public void onCancel(DialogFragment dialog) {
                                 super.onCancel(dialog);
                                 dialog.dismiss();
+                                Timber.i("Cancel!");
                             }
 
                             @Override

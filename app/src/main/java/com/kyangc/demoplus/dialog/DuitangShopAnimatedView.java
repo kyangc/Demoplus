@@ -40,11 +40,6 @@ public class DuitangShopAnimatedView extends DialogAnimationView {
     private static long DURATION_DISMISS = 420;//ms
 
     /**
-     * Data
-     */
-    IAnimationListener mListener;
-
-    /**
      * View
      */
     ImageView ivLogo;
@@ -75,7 +70,7 @@ public class DuitangShopAnimatedView extends DialogAnimationView {
     }
 
     @Override
-    public DuitangShopAnimatedView prepare() {
+    public DuitangShopAnimatedView prepareAnimation() {
         //logo background pulse y
         ObjectAnimator logoBackgroundScaleY = ObjectAnimator
                 .ofFloat(flLogoBackground, View.SCALE_Y, 1f, LOGO_SCALE, 1f);
@@ -137,34 +132,28 @@ public class DuitangShopAnimatedView extends DialogAnimationView {
             @Override
             public void onAnimationStart(Animator animation) {
                 isAnimationRunning = true;
-                if (mListener != null) {
-                    mListener.onStart(animation);
+                if (mAnimationListener != null) {
+                    mAnimationListener.onStart(animation);
                 }
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
                 isAnimationRunning = false;
-                if (mListener != null) {
-                    mListener.onEnd(animation);
+                if (mAnimationListener != null) {
+                    mAnimationListener.onEnd(animation);
                 }
             }
 
             @Override
             public void onAnimationCancel(Animator animation) {
                 isAnimationRunning = false;
-                if (mListener != null) {
-                    mListener.onCancel(animation);
+                if (mAnimationListener != null) {
+                    mAnimationListener.onCancel(animation);
                 }
             }
         });
         isAnimationPrepared = true;
-        return this;
-    }
-
-    @Override
-    AnimationView setAnimatorListener(IAnimationListener listener) {
-        this.mListener = listener;
         return this;
     }
 }

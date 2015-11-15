@@ -17,9 +17,6 @@ import android.view.Window;
  */
 public class AnimatedProgressDialog extends DialogFragment {
 
-    /**
-     * Views
-     */
     Window wWindow;
 
     DialogAnimationView mAnimationView;
@@ -55,7 +52,7 @@ public class AnimatedProgressDialog extends DialogFragment {
         if (!mAnimationView.isAnimationPrepared()) {
             mAnimationView
                     .setInteractionListener(mInteractionListener)
-                    .prepare();
+                    .prepareAnimation();
         }
     }
 

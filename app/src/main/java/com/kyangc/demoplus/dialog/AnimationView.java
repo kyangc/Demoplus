@@ -20,11 +20,16 @@ public abstract class AnimationView {
 
     AnimatorSet mAnimatorSet;
 
+    IAnimationListener mAnimationListener;
+
     abstract View bindView(LayoutInflater inflater, ViewGroup parent);
 
-    abstract AnimationView prepare();
+    abstract AnimationView prepareAnimation();
 
-    abstract AnimationView setAnimatorListener(IAnimationListener listener);
+    public AnimationView setAnimatorListener(IAnimationListener listener) {
+        this.mAnimationListener = listener;
+        return this;
+    }
 
     public void start() {
         mAnimatorSet.start();
