@@ -20,13 +20,13 @@ public abstract class AnimationView {
 
     AnimatorSet mAnimatorSet;
 
-    IAnimationListener mAnimationListener;
+    Animator.AnimatorListener mAnimationListener;
 
     abstract View bindView(LayoutInflater inflater, ViewGroup parent);
 
     abstract AnimationView prepareAnimation();
 
-    public AnimationView setAnimatorListener(IAnimationListener listener) {
+    public AnimationView setAnimatorListener(Animator.AnimatorListener listener) {
         this.mAnimationListener = listener;
         return this;
     }
@@ -62,16 +62,5 @@ public abstract class AnimationView {
 
     public boolean isAnimationRunning() {
         return isAnimationRunning;
-    }
-
-    public interface IAnimationListener {
-
-        void onStart(Animator animation);
-
-        void onEnd(Animator animation);
-
-        void onCancel(Animator animation);
-
-        void onRepeat(Animator animation);
     }
 }

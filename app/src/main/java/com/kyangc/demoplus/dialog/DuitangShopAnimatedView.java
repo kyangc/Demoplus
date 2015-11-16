@@ -2,8 +2,6 @@ package com.kyangc.demoplus.dialog;
 
 import com.kyangc.demoplus.R;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -128,31 +126,7 @@ public class DuitangShopAnimatedView extends DialogAnimationView {
                 .with(logoBackgroundScaleY);
         mAnimatorSet.play(scaleLargeX).with(scaleLargeY).with(iconExit).after(logoScaleX);
         mAnimatorSet.play(backgroundAlpha).after(scaleLargeX);
-        mAnimatorSet.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                isAnimationRunning = true;
-                if (mAnimationListener != null) {
-                    mAnimationListener.onStart(animation);
-                }
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                isAnimationRunning = false;
-                if (mAnimationListener != null) {
-                    mAnimationListener.onEnd(animation);
-                }
-            }
-
-            @Override
-            public void onAnimationCancel(Animator animation) {
-                isAnimationRunning = false;
-                if (mAnimationListener != null) {
-                    mAnimationListener.onCancel(animation);
-                }
-            }
-        });
+        mAnimatorSet.addListener(mAnimationListener);
         isAnimationPrepared = true;
         return this;
     }

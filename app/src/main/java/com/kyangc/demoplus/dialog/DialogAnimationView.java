@@ -1,6 +1,7 @@
 package com.kyangc.demoplus.dialog;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.app.DialogFragment;
 
 /**
@@ -15,26 +16,29 @@ public abstract class DialogAnimationView extends AnimationView {
     }
 
     public DialogAnimationView setInteractionListener(final IInteractionListener listener) {
-        setAnimatorListener(new AnimationListenerAdapter() {
+        setAnimatorListener(new AnimatorListenerAdapter() {
             @Override
-            public void onStart(Animator animation) {
-                super.onStart(animation);
+            public void onAnimationStart(Animator animation) {
+                super.onAnimationStart(animation);
+                isAnimationRunning = true;
                 if (listener != null) {
                     listener.onStart(fragment);
                 }
             }
 
             @Override
-            public void onEnd(Animator animation) {
-                super.onEnd(animation);
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                isAnimationRunning = false;
                 if (listener != null) {
                     listener.onEnd(fragment);
                 }
             }
 
             @Override
-            public void onCancel(Animator animation) {
-                super.onCancel(animation);
+            public void onAnimationCancel(Animator animation) {
+                super.onAnimationCancel(animation);
+                isAnimationRunning = false;
                 if (listener != null) {
                     listener.onCancel(fragment);
                 }
