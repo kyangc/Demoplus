@@ -59,31 +59,7 @@ public class AboutActivity extends BaseActivity {
         avatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AnimatedProgressDialog dialog = new AnimatedProgressDialog();
-                dialog
-                        .setAnimationView(new DuitangShopAnimatedView(dialog))
-                        .setInteractionListener(new InteractionListenerAdapter() {
-                            @Override
-                            public void onStart(DialogFragment dialog) {
-                                super.onStart(dialog);
-                                Timber.i("Start!");
-                            }
-
-                            @Override
-                            public void onCancel(DialogFragment dialog) {
-                                super.onCancel(dialog);
-                                dialog.dismiss();
-                                Timber.i("Cancel!");
-                            }
-
-                            @Override
-                            public void onEnd(DialogFragment dialog) {
-                                super.onEnd(dialog);
-                                dialog.dismiss();
-                                Timber.i("End!");
-                            }
-                        })
-                        .show(getFragmentManager(), "animated_dialog");
+                startActivity(new Intent(AboutActivity.this, LargeImageActivity.class));
             }
         });
     }
