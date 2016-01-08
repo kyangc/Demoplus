@@ -35,5 +35,6 @@
         <item>@drawable/ic_list</item>
         <item>@drawable/ic_face</item>
     </string-array>
+    <string name="title_activity_large_image">LargeImageActivity</string>
 
 </resources>
