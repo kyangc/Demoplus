@@ -52,6 +52,16 @@ public class DetailedImageView extends View {
     private Rect mDisplayRect;
 
     /**
+     * 用于标示Image的区域。用于绘制越界时的图像。
+     */
+    private Rect mImageRect;
+
+    /**
+     * 屏幕RECT
+     */
+    private Rect mScreenRect;
+
+    /**
      * 手势检测器
      */
     private MoveGestureDetector mDetector;
@@ -124,6 +134,9 @@ public class DetailedImageView extends View {
         mCutRect = getInitCutRect(0, 0, mImageHeight, mImageWidth,
                 mScreenHeight, mScreenWidth, false, false);
 
+        //Init image rect
+        mImageRect = getInitImageRect(mCutRect, mImageWidth, mImageHeight);
+
         //Update sample size
         mDecodeOptions.inSampleSize = getSampleSize(mCutRect, mDisplayRect);
     }
@@ -131,7 +144,10 @@ public class DetailedImageView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         decode(mDecoder, mDecodeOptions, mCutRect);
-        canvas.drawBitmap(mDecodeOptions.inBitmap, mDisplayRect, mDisplayRect, null);
+        canvas.drawRGB(0, 0, 0);
+        updateImageRect(mImageRect, mCutRect, mImageWidth, mImageHeight);
+        updateDisplayRect(mDisplayRect, mImageRect, mCutRect, mScreenHeight);
+        canvas.drawBitmap(mDecodeOptions.inBitmap, mImageRect, mDisplayRect, null);
     }
 
     @Override
@@ -151,7 +167,7 @@ public class DetailedImageView extends View {
      *
      * @param is 输入流
      */
-    public void setInputStream(InputStream is) {
+    public void setInputStream(@NonNull InputStream is) {
         try {
             //Prepare decoder
             if (mDecoder != null && !mDecoder.isRecycled()) {
@@ -164,9 +180,7 @@ public class DetailedImageView extends View {
             e.printStackTrace();
         } finally {
             try {
-                if (is != null) {
-                    is.close();
-                }
+                is.close();
             } catch (Exception ignored) {
             }
         }
@@ -227,6 +241,40 @@ public class DetailedImageView extends View {
             double ratio = (double) sampleLength / (double) displayLength;
             return (int) ratio;
         }
+    }
+
+    /**
+     * 初始化显示的rect
+     *
+     * @param screenHeight 屏幕高度
+     * @param screenWidth  屏幕宽度
+     */
+    private Rect getInitDisplayRect(int screenHeight, int screenWidth) {
+        Rect displayRect = new Rect();
+        displayRect.top = 0;
+        displayRect.left = 0;
+        displayRect.bottom = screenHeight;
+        displayRect.right = screenWidth;
+        return displayRect;
+    }
+
+    /**
+     * 更新显示的区域Rect
+     *
+     * @param displayRect 原有的显示区域Rect
+     * @param imageRect   bitmap中有效区域
+     * @param cutRect     裁剪Rect
+     * @return 更新后的显示区域Rect
+     */
+    private Rect updateDisplayRect(@NonNull Rect displayRect, @NonNull Rect imageRect,
+            @NonNull Rect cutRect, int screenHeight) {
+        double cutHeight = cutRect.height();
+        double ratio = (double) screenHeight / cutHeight;
+        displayRect.top = (int) (ratio * (double) imageRect.top);
+        displayRect.left = (int) (ratio * (double) imageRect.left);
+        displayRect.right = (int) (ratio * (double) imageRect.right);
+        displayRect.bottom = (int) (ratio * (double) imageRect.bottom);
+        return displayRect;
     }
 
     /**
@@ -302,48 +350,108 @@ public class DetailedImageView extends View {
     }
 
     /**
-     * 初始化显示的rect
-     *
-     * @param screenHeight 屏幕高度
-     * @param screenWidth  屏幕宽度
-     */
-    private Rect getInitDisplayRect(int screenHeight, int screenWidth) {
-        Rect displayRect = new Rect();
-        displayRect.top = 0;
-        displayRect.left = 0;
-        displayRect.bottom = screenHeight;
-        displayRect.right = screenWidth;
-        return displayRect;
-    }
-
-    /**
      * 更新移动后的裁剪Rect。
      *
-     * @param cutRect     裁剪Rect
-     * @param offsetX     X轴偏移量
-     * @param offsetY     Y轴偏移量
-     * @param cutWidth    裁剪宽度
-     * @param displayRect 显示Rect
+     * @param cutRect  裁剪Rect
+     * @param offsetX  X轴偏移量
+     * @param offsetY  Y轴偏移量
+     * @param cutWidth 裁剪宽度
      * @return 更新过的Rect
      */
     public Rect updateCutRect(@NonNull Rect cutRect, int offsetX, int offsetY, int cutWidth,
-            @NonNull Rect displayRect) {
+            int screenHeight, int screenWidth) {
+
+        double ratio = (double) screenHeight / (double) screenWidth;
+        int cutHeight = (int) (cutWidth * ratio);
+
         cutRect.offset(-offsetX, -offsetY);
 
-        double dispWidth = displayRect.width();
-        double dispHeight = displayRect.height();
-
-        if (dispHeight == 0) {
-            return cutRect;
+        if (cutRect.left <= -cutWidth) {
+            cutRect.left = -cutWidth + 1;
         }
 
-        double ratio = dispHeight / dispWidth;
-        double cutHeight = cutWidth * ratio;
+        if (cutRect.top <= -cutHeight) {
+            cutRect.top = -cutHeight + 1;
+        }
+
+        if (cutRect.left >= cutWidth) {
+            cutRect.left = cutWidth - 1;
+        }
+
+        if (cutRect.top >= cutHeight) {
+            cutRect.top = cutHeight - 1;
+        }
 
         cutRect.right = cutRect.left + cutWidth;
-        cutRect.bottom = cutRect.top + (int) cutHeight;
+        cutRect.bottom = cutRect.top + cutHeight;
 
         return cutRect;
+    }
+
+    /**
+     * 初始化image区域的Rect，其大多数情况下与displayRect相同，但是当显示过界图像时会用到
+     *
+     * @param cutRect     裁剪图像的Rect
+     * @param imageWidth  图像的宽度
+     * @param imageHeight 图像的高度
+     * @return 包含有效图像信息的区域
+     */
+    private Rect getInitImageRect(@NonNull Rect cutRect, int imageWidth, int imageHeight) {
+        Rect rect = new Rect();
+        return updateImageRect(rect, cutRect, imageWidth, imageHeight);
+    }
+
+    /**
+     * 更新图像区域Rect
+     *
+     * @param imageRect   指示有效图像区域的Rect
+     * @param cutRect     裁剪的Rect
+     * @param imageWidth  图像宽度
+     * @param imageHeight 图像高度
+     * @return 更新之后的Rect
+     */
+    private Rect updateImageRect(@NonNull Rect imageRect, @NonNull Rect cutRect, int imageWidth,
+            int imageHeight) {
+        double cutHeight = cutRect.height();
+        double cutWidth = cutRect.width();
+
+        //left
+        if (cutRect.left >= 0) {
+            //in image
+            imageRect.left = 0;
+        } else {
+            //out of image
+            imageRect.left = -cutRect.left;
+        }
+
+        //top
+        if (cutRect.top >= 0) {
+            //in image
+            imageRect.top = 0;
+        } else {
+            //out of image
+            imageRect.top = -cutRect.top;
+        }
+
+        //right
+        if (cutRect.right <= imageWidth) {
+            //in image
+            imageRect.right = (int) cutWidth;
+        } else {
+            //out of image
+            imageRect.right = imageWidth - cutRect.left;
+        }
+
+        //bottom
+        if (cutRect.bottom <= imageHeight) {
+            //in image
+            imageRect.bottom = (int) cutHeight;
+        } else {
+            //out of image
+            imageRect.bottom = imageHeight - cutRect.top;
+        }
+
+        return imageRect;
     }
 
     /**
@@ -352,15 +460,15 @@ public class DetailedImageView extends View {
      * @param fingerDeltaX 手指移动的距离X坐标
      * @param fingerDeltaY 手指移动的距离Y坐标
      * @param cutRect      裁剪区域
-     * @param displayRect  显示区域
+     * @param screenRect   屏幕区域
      */
     private Rect moveCutRegion(double fingerDeltaX, double fingerDeltaY, Rect cutRect,
-            Rect displayRect) {
-        double scaleRatio = getScaledRatio(cutRect, displayRect);
+            @NonNull Rect screenRect) {
+        double scaleRatio = getScaledRatio(cutRect, screenRect);
         double cutDeltaX = fingerDeltaX / scaleRatio;
         double cutDeltaY = fingerDeltaY / scaleRatio;
         return updateCutRect(cutRect, (int) cutDeltaX, (int) cutDeltaY, cutRect.width(),
-                displayRect);
+                mScreenHeight, mScreenWidth);
     }
 
     /**
@@ -374,7 +482,7 @@ public class DetailedImageView extends View {
      */
     private Rect scaleCutRegion(int pivotX, int pivotY, double scaleRatio, @NonNull Rect cutRect,
             @NonNull Rect displayRect) {
-        return updateCutRect(cutRect, 0, 0, 0, displayRect);// TODO: 16/1/11 UPDATE
+        return updateCutRect(cutRect, 0, 0, 0, mScreenHeight, mScreenWidth);
     }
 
     /**
@@ -384,7 +492,8 @@ public class DetailedImageView extends View {
      * @param options 解码选项
      * @param cutRect 解码区域
      */
-    private void decode(BitmapRegionDecoder decoder, BitmapFactory.Options options, Rect cutRect) {
+    private void decode(@NonNull BitmapRegionDecoder decoder,
+            @NonNull BitmapFactory.Options options, @NonNull Rect cutRect) {
         if (options.inBitmap == null) {
             options.inBitmap = decoder.decodeRegion(cutRect, options);
         } else {
@@ -396,11 +505,11 @@ public class DetailedImageView extends View {
      * 获取当前裁剪区域在显示中的放缩倍数。
      * 如：600宽度的图片显示在1080宽度的手机屏幕上，放缩倍数为1080/600=1.8。
      *
-     * @param cutRect     裁剪区域
-     * @param displayRect 显示区域
+     * @param cutRect    裁剪区域
+     * @param screenRect 屏幕区域
      * @return 放缩倍数
      */
-    private double getScaledRatio(@NonNull Rect cutRect, @NonNull Rect displayRect) {
-        return (double) displayRect.width() / (double) cutRect.width();
+    private double getScaledRatio(@NonNull Rect cutRect, @NonNull Rect screenRect) {
+        return (double) screenRect.width() / (double) cutRect.width();
     }
 }
