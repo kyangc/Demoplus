@@ -11,10 +11,16 @@ import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
+import android.view.ViewConfiguration;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import timber.log.Timber;
 
 /**
  * Created by chengkangyang on 16/1/8.
@@ -67,6 +73,31 @@ public class DetailedImageView extends View {
     private MoveGestureDetector mDetector;
 
     /**
+     * 触点ID
+     */
+    private int mTouchPoint;
+
+    /**
+     * 滑动的TimerTask
+     */
+    private ScrollTimerTask mScrollTimerTask;
+
+    /**
+     * 控制滑动的Timer
+     */
+    private Timer mTimer;
+
+    /**
+     * 滑动速度检测器
+     */
+    private VelocityTracker mVelocityTracker;
+
+    /**
+     * 可检测的最大速度
+     */
+    private int mMaxVelocity;
+
+    /**
      * 构造函数
      */
     public DetailedImageView(Context context) {
@@ -94,11 +125,14 @@ public class DetailedImageView extends View {
                     public boolean onMove(MoveGestureDetector detector) {
                         double moveX = detector.getFocusDelta().x;
                         double moveY = detector.getFocusDelta().y;
-                        moveCutRegion(moveX, moveY, mCutRect, mDisplayRect);
+                        moveCutRegion(moveX, moveY, mCutRect, mScreenRect);
                         invalidate();
                         return true;
                     }
                 });
+
+        mVelocityTracker = VelocityTracker.obtain();
+        mMaxVelocity = ViewConfiguration.get(getContext()).getScaledMaximumFlingVelocity();
     }
 
     /**
@@ -117,6 +151,12 @@ public class DetailedImageView extends View {
             mDecoder = null;
         }
 
+        if (mVelocityTracker != null) {
+            mVelocityTracker.clear();
+            mVelocityTracker.recycle();
+            mVelocityTracker = null;
+        }
+
         System.gc();
     }
 
@@ -129,6 +169,7 @@ public class DetailedImageView extends View {
 
         //Init Display rect
         mDisplayRect = getInitDisplayRect(mScreenHeight, mScreenWidth);
+        mScreenRect = getInitDisplayRect(mScreenHeight, mScreenWidth);
 
         //Init Cut rect
         mCutRect = getInitCutRect(0, 0, mImageHeight, mImageWidth,
@@ -159,6 +200,40 @@ public class DetailedImageView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         mDetector.onTouchEvent(event);
+        mVelocityTracker.addMovement(event);
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                if (mScrollTimerTask != null) {
+                    mScrollTimerTask.cancel();
+                }
+
+                if (mTimer != null) {
+                    mTimer.cancel();
+                    mTimer.purge();
+                }
+
+                mTouchPoint = event.getPointerId(0);
+                break;
+
+            case MotionEvent.ACTION_UP:
+                mVelocityTracker.computeCurrentVelocity(1000, mMaxVelocity);
+                float mVelocityX = mVelocityTracker.getXVelocity(mTouchPoint);
+                float mVelocityY = mVelocityTracker.getYVelocity(mTouchPoint);
+                mVelocityTracker.clear();
+
+                mScrollTimerTask = new ScrollTimerTask(mVelocityX, mVelocityY);
+                mTimer = new Timer();
+                mTimer.schedule(mScrollTimerTask, 0, ScrollTimerTask.POST_INTERVAL);
+                break;
+
+            case MotionEvent.ACTION_CANCEL:
+                mVelocityTracker.clear();
+                break;
+
+            default:
+                break;
+        }
         return true;
     }
 
@@ -359,7 +434,7 @@ public class DetailedImageView extends View {
      * @return 更新过的Rect
      */
     public Rect updateCutRect(@NonNull Rect cutRect, int offsetX, int offsetY, int cutWidth,
-            int screenHeight, int screenWidth) {
+            int screenHeight, int screenWidth, int imageHeight) {
 
         double ratio = (double) screenHeight / (double) screenWidth;
         int cutHeight = (int) (cutWidth * ratio);
@@ -378,13 +453,12 @@ public class DetailedImageView extends View {
             cutRect.left = cutWidth - 1;
         }
 
-        if (cutRect.top >= cutHeight) {
-            cutRect.top = cutHeight - 1;
+        if (cutRect.top >= imageHeight) {
+            cutRect.top = imageHeight - 1;
         }
 
         cutRect.right = cutRect.left + cutWidth;
         cutRect.bottom = cutRect.top + cutHeight;
-
         return cutRect;
     }
 
@@ -468,7 +542,7 @@ public class DetailedImageView extends View {
         double cutDeltaX = fingerDeltaX / scaleRatio;
         double cutDeltaY = fingerDeltaY / scaleRatio;
         return updateCutRect(cutRect, (int) cutDeltaX, (int) cutDeltaY, cutRect.width(),
-                mScreenHeight, mScreenWidth);
+                mScreenHeight, mScreenWidth, mImageHeight);
     }
 
     /**
@@ -482,7 +556,7 @@ public class DetailedImageView extends View {
      */
     private Rect scaleCutRegion(int pivotX, int pivotY, double scaleRatio, @NonNull Rect cutRect,
             @NonNull Rect displayRect) {
-        return updateCutRect(cutRect, 0, 0, 0, mScreenHeight, mScreenWidth);
+        return updateCutRect(cutRect, 0, 0, 0, mScreenHeight, mScreenWidth, mImageHeight);
     }
 
     /**
@@ -511,5 +585,74 @@ public class DetailedImageView extends View {
      */
     private double getScaledRatio(@NonNull Rect cutRect, @NonNull Rect screenRect) {
         return (double) screenRect.width() / (double) cutRect.width();
+    }
+
+    private class ScrollTimerTask extends TimerTask {
+
+        public static final int POST_INTERVAL = 17;//1000/60
+
+        private static final float ACCELERATION = 0.01f;
+
+        private float mVelocityX, mVelocityY;
+
+        public ScrollTimerTask(float velocityX, float velocityY) {
+            mVelocityX = velocityX/1000;
+            mVelocityY = velocityY/1000;
+        }
+
+        @Override
+        public void run() {
+            float deltaX = getDeltaMovement(mVelocityX, POST_INTERVAL, ACCELERATION);
+            float deltaY = getDeltaMovement(mVelocityY, POST_INTERVAL, ACCELERATION);
+            Timber.i(deltaX + "," + deltaY);
+            mVelocityX = getLaterSpeed(mVelocityX, POST_INTERVAL, ACCELERATION);
+            mVelocityY = getLaterSpeed(mVelocityY, POST_INTERVAL, ACCELERATION);
+            if (deltaX != 0 || deltaY != 0) {
+                moveCutRegion(deltaX, deltaY, mCutRect, mScreenRect);
+                postInvalidate();
+            } else {
+                mScrollTimerTask.cancel();
+                mTimer.cancel();
+                mTimer.purge();
+            }
+        }
+
+        /**
+         * 获取匀减速运动的距离。单位为像素。正直向下(右)，负值向上(左)。
+         *
+         * @param v0 初始速度
+         * @param t  持续时间
+         * @param a  减速度（绝对值）
+         * @return 移动距离
+         */
+        private float getDeltaMovement(float v0, float t, float a) {
+            float absV0 = Math.abs(v0);
+            float flag = v0 >= 0 ? 1 : -1;
+
+            if (absV0 / a <= t) {
+                t = absV0 / a;
+            }
+
+            return (absV0 * t - a * (float) Math.pow(t, 2) / 2f) * flag;
+        }
+
+        /**
+         * 获取在减速度为a时，经过t时刻后的速度。单位：像素/毫秒
+         *
+         * @param v0 初速度
+         * @param t  时间
+         * @param a  加速度（绝对值）
+         * @return 经过T时间之后的速度。
+         */
+        private float getLaterSpeed(float v0, float t, float a) {
+            float absV0 = Math.abs(v0);
+            int flag = v0 >= 0 ? 1 : -1;
+
+            if (absV0 / a <= t) {
+                return 0;
+            }
+
+            return (absV0 - a * t) * flag;
+        }
     }
 }
