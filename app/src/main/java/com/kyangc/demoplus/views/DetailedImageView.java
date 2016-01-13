@@ -20,6 +20,8 @@ import java.io.InputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import timber.log.Timber;
+
 /**
  * Created by chengkangyang on 16/1/8.
  */
@@ -29,7 +31,7 @@ public class DetailedImageView extends View {
      * 在裁剪出用于一屏显示的Bitmap的时候，额外缓冲的比例。例如屏幕大小100*100，在0.2的缓冲比下，
      * 会缓冲120*120大小的图片。
      */
-    public static final float BUFFER_RATIO = 2f;
+    public static final float BUFFER_RATIO = 3f;
 
     /**
      * 解码选项
@@ -135,7 +137,7 @@ public class DetailedImageView extends View {
                     public boolean onMove(MoveGestureDetector detector) {
                         double moveX = detector.getFocusDelta().x;
                         double moveY = detector.getFocusDelta().y;
-                        moveDisplayRegion(moveX, moveY, mBufferRect, mDisplayRect, mScreenRect,
+                        move(moveX, moveY, mBufferRect, mDisplayRect, mScreenRect,
                                 mImageRect);
                         invalidate();
                         return true;
@@ -181,7 +183,7 @@ public class DetailedImageView extends View {
         mDisplayRect = initDisplayRect(0, 0, mImageRect, mScreenRect, false, false);
 
         //Init buffer rect
-        mBufferRect = initBufferRect(mDisplayRect, BUFFER_RATIO);
+        mBufferRect = initBufferRect(mDisplayRect, mImageRect, BUFFER_RATIO);
 
         //Init image rect
         mSrcRect = initSrcRect(mDisplayRect, mBufferRect, mImageRect);
@@ -311,7 +313,9 @@ public class DetailedImageView extends View {
      * @param displayRect 显示的Rect
      * @return 采样数值
      */
-    public int getSampleSize(@NonNull Rect sampleRect, @NonNull Rect displayRect) {
+    public int getSampleSize(
+            @NonNull Rect sampleRect,
+            @NonNull Rect displayRect) {
         int sampleLength = sampleRect.right - sampleRect.left;
         int displayLength = displayRect.right - displayRect.left;
 
@@ -330,13 +334,29 @@ public class DetailedImageView extends View {
     }
 
     /**
+     * 获取当前裁剪区域在显示中的放缩倍数。
+     * 如：600宽度的图片显示在1080宽度的手机屏幕上，放缩倍数为1080/600=1.8。
+     *
+     * @param cutRect    裁剪区域
+     * @param screenRect 屏幕区域
+     * @return 放缩倍数m
+     */
+    private double getScaledRatio(
+            @NonNull Rect cutRect,
+            @NonNull Rect screenRect) {
+        return (double) screenRect.width() / (double) cutRect.width();
+    }
+
+    /**
      * 初始化屏幕属性的Rect
      *
      * @param screenWidth  屏幕宽度
      * @param screenHeight 屏幕高度
      * @return 屏幕属性的Rect
      */
-    public Rect initScreenRect(int screenWidth, int screenHeight) {
+    public Rect initScreenRect(
+            int screenWidth,
+            int screenHeight) {
         return new Rect(0, 0, screenWidth, screenHeight);
     }
 
@@ -344,15 +364,22 @@ public class DetailedImageView extends View {
      * 根据显示区域来初始化Buffer区域。
      *
      * @param displayRect 显示区域Rect
+     * @param imageRect   图片区域Rect
      * @param bufferRatio Buffer的比例
      * @return 显示区域
      */
-    public Rect initBufferRect(@NonNull Rect displayRect, float bufferRatio) {
+    public Rect initBufferRect(
+            @NonNull Rect displayRect,
+            @NonNull Rect imageRect,
+            float bufferRatio) {
         Rect rect = new Rect();
         float dispWidth = displayRect.width();
         float dispHeight = displayRect.height();
         float bufferWidth = bufferRatio * dispWidth;
         float bufferHeight = bufferRatio * dispHeight;
+        bufferWidth = bufferWidth >= 2 * imageRect.width() ? 2 * imageRect.width() : bufferWidth;
+        bufferHeight = bufferHeight >= 2 * imageRect.height() ? 2 * imageRect.height()
+                : bufferHeight;
         rect.left = displayRect.left - (int) (bufferWidth / 2f);
         rect.top = displayRect.top - (int) (bufferHeight / 2f);
         rect.right = displayRect.right + (int) (bufferWidth / 2f);
@@ -367,7 +394,9 @@ public class DetailedImageView extends View {
      * @param displayRect 显示的Rect
      * @return 更新后的显示Rect。
      */
-    public boolean updateBufferRect(@NonNull Rect bufferRect, @NonNull Rect displayRect) {
+    public boolean updateBufferRect(
+            @NonNull Rect bufferRect,
+            @NonNull Rect displayRect) {
         float extraWidth = bufferRect.width() - displayRect.width();
         float extraHeight = bufferRect.height() - displayRect.width();
         boolean isBufferAreaChanged = false;
@@ -396,6 +425,14 @@ public class DetailedImageView extends View {
 
     /**
      * 初始化裁剪Rect。
+     *
+     * @param x            初始化显示的区域
+     * @param y            初始化显示的区域
+     * @param imageRect    图片rect
+     * @param screenRect   屏幕rect
+     * @param isDisplayAll 是否显示全部
+     * @param isCenter     是否中心显示
+     * @return 初始化之后的显示rect
      */
     public Rect initDisplayRect(
             int x,
@@ -468,8 +505,14 @@ public class DetailedImageView extends View {
 
     /**
      * 更新移动后的裁剪Rect。
+     *
+     * @param displayRect 显示的区域，以图片为坐标轴。
+     * @param offsetX     移动的X偏移量
+     * @param offsetY     移动的Y偏移量
+     * @param imageRect   图像Rect
+     * @return 移动后的显示区域Rect
      */
-    public Rect updateDisplayRect(
+    public Rect moveDisplayRect(
             @NonNull Rect displayRect,
             int offsetX,
             int offsetY,
@@ -643,7 +686,7 @@ public class DetailedImageView extends View {
      * @param imageRect    表征图片属性的rect
      * @return 移动指挥的displayRect
      */
-    private Rect moveDisplayRegion(
+    private Rect move(
             double fingerDeltaX,
             double fingerDeltaY,
             @NonNull Rect bufferRect,
@@ -653,7 +696,7 @@ public class DetailedImageView extends View {
         double scaleRatio = getScaledRatio(displayRect, screenRect);
         double displayDeltaX = fingerDeltaX / scaleRatio;
         double displayDeltaY = fingerDeltaY / scaleRatio;
-        updateDisplayRect(displayRect, (int) displayDeltaX, (int) displayDeltaY, imageRect);
+        moveDisplayRect(displayRect, (int) displayDeltaX, (int) displayDeltaY, imageRect);
         if (updateBufferRect(bufferRect, displayRect)) {
             //Decode
             decode(mDecoder, mDecodeOptions, bufferRect);
@@ -664,47 +707,23 @@ public class DetailedImageView extends View {
     }
 
     /**
-     * 根据缩放后的情况修改解码区域
-     *
-     * @param pivotX      放缩锚点X坐标
-     * @param pivotY      放缩锚点Y坐标
-     * @param scaleRatio  放缩幅度
-     * @param cutRect     裁剪区域
-     * @param displayRect 显示区域
-     */
-    private Rect scaleCutRegion(
-            int pivotX,
-            int pivotY,
-            double scaleRatio,
-            @NonNull Rect cutRect,
-            @NonNull Rect displayRect) {
-        return null;// TODO: 16/1/13
-    }
-
-    /**
      * 使用给定的decoder按照option和rect进行区域解码。
+     *
+     * @param decoder    区域解码器
+     * @param options    解码属性
+     * @param bufferRect 解码区域
      */
     private void decode(
             @NonNull BitmapRegionDecoder decoder,
             @NonNull BitmapFactory.Options options,
             @NonNull Rect bufferRect) {
+        long time = System.currentTimeMillis();
         if (options.inBitmap == null) {
             options.inBitmap = decoder.decodeRegion(bufferRect, options);
         } else {
             decoder.decodeRegion(bufferRect, options);
         }
-    }
-
-    /**
-     * 获取当前裁剪区域在显示中的放缩倍数。
-     * 如：600宽度的图片显示在1080宽度的手机屏幕上，放缩倍数为1080/600=1.8。
-     *
-     * @param cutRect    裁剪区域
-     * @param screenRect 屏幕区域
-     * @return 放缩倍数m
-     */
-    private double getScaledRatio(@NonNull Rect cutRect, @NonNull Rect screenRect) {
-        return (double) screenRect.width() / (double) cutRect.width();
+        Timber.i("DECODE! Time = " + (System.currentTimeMillis() - time));
     }
 
     /**
@@ -730,7 +749,7 @@ public class DetailedImageView extends View {
             mVelocityX = getLaterSpeed(mVelocityX, POST_INTERVAL, ACCELERATION);
             mVelocityY = getLaterSpeed(mVelocityY, POST_INTERVAL, ACCELERATION);
             if (deltaX != 0 || deltaY != 0) {
-                moveDisplayRegion(deltaX, deltaY, mBufferRect, mDisplayRect, mScreenRect,
+                move(deltaX, deltaY, mBufferRect, mDisplayRect, mScreenRect,
                         mImageRect);
                 postInvalidate();
             } else {
