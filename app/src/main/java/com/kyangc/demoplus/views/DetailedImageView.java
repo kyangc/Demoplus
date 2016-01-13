@@ -23,7 +23,10 @@ import java.util.TimerTask;
 import timber.log.Timber;
 
 /**
- * Created by chengkangyang on 16/1/8.
+ * Author:  kyangc
+ * Email:   kyangc@gmail.com
+ * Date:    2016-01-14
+ * Project: Demoplus
  */
 public class DetailedImageView extends View {
 
