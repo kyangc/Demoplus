@@ -11,15 +11,25 @@ import android.graphics.Rect;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
+import android.view.ViewConfiguration;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by chengkangyang on 16/1/8.
  */
 public class DetailedImageView extends View {
+
+    /**
+     * 在裁剪出用于一屏显示的Bitmap的时候，额外缓冲的比例。例如屏幕大小100*100，在0.2的缓冲比下，
+     * 会缓冲120*120大小的图片。
+     */
+    public static final float BUFFER_RATIO = 2f;
 
     /**
      * 解码选项
@@ -32,29 +42,70 @@ public class DetailedImageView extends View {
     private BitmapRegionDecoder mDecoder;
 
     /**
-     * 图片的宽度和高度
+     * 在图片坐标系中。
+     * 用于缓存下超出屏幕区域一定大小的区域。
      */
-    private int mImageWidth, mImageHeight;
+    private Rect mBufferRect;
 
     /**
-     * 屏幕显示区域的宽度和高度
-     */
-    private int mScreenWidth, mScreenHeight;
-
-    /**
-     * 裁剪的Rect区域
-     */
-    private Rect mCutRect;
-
-    /**
-     * 显示的Rect区域
+     * 在图片坐标系中。
+     * 在BufferRect中，用于映射到屏幕上的区域，用于判定是否触发Buffer以及辅助计算mSrcRect和mDestRect。
      */
     private Rect mDisplayRect;
+
+    /**
+     * 在屏幕坐标系中。
+     * 指示绘制在屏幕上的、含有图像内容的区域。
+     */
+    private Rect mDestRect;
+
+    /**
+     * 在裁切好(Buffer后)的Bitmap坐标系中。
+     * 用于标示在裁剪好的Bitmap中，有效的、需要显示到屏幕上的区域。
+     */
+    private Rect mSrcRect;
+
+    /**
+     * 在屏幕坐标系中。
+     * 用于标识整个屏幕区域。
+     */
+    private Rect mScreenRect;
+
+    /**
+     * 图片坐标系中。
+     * 用于标示图片。
+     */
+    private Rect mImageRect;
 
     /**
      * 手势检测器
      */
     private MoveGestureDetector mDetector;
+
+    /**
+     * 触点ID
+     */
+    private int mTouchPoint;
+
+    /**
+     * 滑动的TimerTask
+     */
+    private ScrollTimerTask mScrollTimerTask;
+
+    /**
+     * 控制滑动的Timer
+     */
+    private Timer mTimer;
+
+    /**
+     * 滑动速度检测器
+     */
+    private VelocityTracker mVelocityTracker;
+
+    /**
+     * 可检测的最大速度
+     */
+    private int mMaxVelocity;
 
     /**
      * 构造函数
@@ -84,11 +135,15 @@ public class DetailedImageView extends View {
                     public boolean onMove(MoveGestureDetector detector) {
                         double moveX = detector.getFocusDelta().x;
                         double moveY = detector.getFocusDelta().y;
-                        moveCutRegion(moveX, moveY, mCutRect, mDisplayRect);
+                        moveDisplayRegion(moveX, moveY, mBufferRect, mDisplayRect, mScreenRect,
+                                mImageRect);
                         invalidate();
                         return true;
                     }
                 });
+
+        mVelocityTracker = VelocityTracker.obtain();
+        mMaxVelocity = ViewConfiguration.get(getContext()).getScaledMaximumFlingVelocity();
     }
 
     /**
@@ -107,31 +162,44 @@ public class DetailedImageView extends View {
             mDecoder = null;
         }
 
+        if (mVelocityTracker != null) {
+            mVelocityTracker.clear();
+            mVelocityTracker.recycle();
+            mVelocityTracker = null;
+        }
+
         System.gc();
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        //Get display size
-        mScreenWidth = getMeasuredWidth();
-        mScreenHeight = getMeasuredHeight();
+        //Init screen rect
+        mScreenRect = initScreenRect(getMeasuredWidth(), getMeasuredHeight());
 
         //Init Display rect
-        mDisplayRect = getInitDisplayRect(mScreenHeight, mScreenWidth);
+        mDisplayRect = initDisplayRect(0, 0, mImageRect, mScreenRect, false, false);
 
-        //Init Cut rect
-        mCutRect = getInitCutRect(0, 0, mImageHeight, mImageWidth,
-                mScreenHeight, mScreenWidth, false, false);
+        //Init buffer rect
+        mBufferRect = initBufferRect(mDisplayRect, BUFFER_RATIO);
+
+        //Init image rect
+        mSrcRect = initSrcRect(mDisplayRect, mBufferRect, mImageRect);
+
+        //Init dest rect
+        mDestRect = initDestRect(mBufferRect, mDisplayRect, mSrcRect, mScreenRect);
 
         //Update sample size
-        mDecodeOptions.inSampleSize = getSampleSize(mCutRect, mDisplayRect);
+        mDecodeOptions.inSampleSize = getSampleSize(mBufferRect, mDestRect);
     }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        decode(mDecoder, mDecodeOptions, mCutRect);
-        canvas.drawBitmap(mDecodeOptions.inBitmap, mDisplayRect, mDisplayRect, null);
+        canvas.drawRGB(0, 0, 0);
+        if (mDecodeOptions.inBitmap == null) {
+            decode(mDecoder, mDecodeOptions, mBufferRect);
+        }
+        canvas.drawBitmap(mDecodeOptions.inBitmap, mSrcRect, mDestRect, null);
     }
 
     @Override
@@ -143,6 +211,40 @@ public class DetailedImageView extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         mDetector.onTouchEvent(event);
+        mVelocityTracker.addMovement(event);
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                if (mScrollTimerTask != null) {
+                    mScrollTimerTask.cancel();
+                }
+
+                if (mTimer != null) {
+                    mTimer.cancel();
+                    mTimer.purge();
+                }
+
+                mTouchPoint = event.getPointerId(0);
+                break;
+
+            case MotionEvent.ACTION_UP:
+                mVelocityTracker.computeCurrentVelocity(1000, mMaxVelocity);
+                float mVelocityX = mVelocityTracker.getXVelocity(mTouchPoint);
+                float mVelocityY = mVelocityTracker.getYVelocity(mTouchPoint);
+                mVelocityTracker.clear();
+
+                mScrollTimerTask = new ScrollTimerTask(mVelocityX, mVelocityY);
+                mTimer = new Timer();
+                mTimer.schedule(mScrollTimerTask, 0, ScrollTimerTask.POST_INTERVAL);
+                break;
+
+            case MotionEvent.ACTION_CANCEL:
+                mVelocityTracker.clear();
+                break;
+
+            default:
+                break;
+        }
         return true;
     }
 
@@ -151,7 +253,7 @@ public class DetailedImageView extends View {
      *
      * @param is 输入流
      */
-    public void setInputStream(InputStream is) {
+    public void setInputStream(@NonNull InputStream is) {
         try {
             //Prepare decoder
             if (mDecoder != null && !mDecoder.isRecycled()) {
@@ -159,14 +261,13 @@ public class DetailedImageView extends View {
             }
             mDecoder = BitmapRegionDecoder.newInstance(is, false);
             mDecodeOptions = getDecodeOptions();
-            getImageSize(is);
+            mImageRect = getImageSize(is);
+            invalidate();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             try {
-                if (is != null) {
-                    is.close();
-                }
+                is.close();
             } catch (Exception ignored) {
             }
         }
@@ -177,12 +278,11 @@ public class DetailedImageView extends View {
      *
      * @param is 文件流。
      */
-    private void getImageSize(@NonNull InputStream is) {
+    private Rect getImageSize(@NonNull InputStream is) {
         BitmapFactory.Options opt = new BitmapFactory.Options();
         opt.inJustDecodeBounds = true;
         BitmapFactory.decodeStream(is, null, opt);
-        mImageWidth = opt.outWidth;
-        mImageHeight = opt.outHeight;
+        return new Rect(0, 0, opt.outWidth, opt.outHeight);
     }
 
     /**
@@ -230,137 +330,337 @@ public class DetailedImageView extends View {
     }
 
     /**
-     * 初始化裁剪Rect。
+     * 初始化屏幕属性的Rect
      *
-     * @param imageHeight  图片高度
-     * @param imageWidth   图片宽度
      * @param screenWidth  屏幕宽度
      * @param screenHeight 屏幕高度
-     * @return 裁剪的rect
+     * @return 屏幕属性的Rect
      */
-    public Rect getInitCutRect(int x, int y, int imageHeight, int imageWidth, int screenHeight,
-            int screenWidth, boolean isDisplayAll, boolean isCenter) {
-        Rect cutRect = new Rect();
-        if (imageHeight == 0 || imageWidth == 0 || screenWidth == 0 || screenHeight == 0) {
-            return cutRect;
+    public Rect initScreenRect(int screenWidth, int screenHeight) {
+        return new Rect(0, 0, screenWidth, screenHeight);
+    }
+
+    /**
+     * 根据显示区域来初始化Buffer区域。
+     *
+     * @param displayRect 显示区域Rect
+     * @param bufferRatio Buffer的比例
+     * @return 显示区域
+     */
+    public Rect initBufferRect(@NonNull Rect displayRect, float bufferRatio) {
+        Rect rect = new Rect();
+        float dispWidth = displayRect.width();
+        float dispHeight = displayRect.height();
+        float bufferWidth = bufferRatio * dispWidth;
+        float bufferHeight = bufferRatio * dispHeight;
+        rect.left = displayRect.left - (int) (bufferWidth / 2f);
+        rect.top = displayRect.top - (int) (bufferHeight / 2f);
+        rect.right = displayRect.right + (int) (bufferWidth / 2f);
+        rect.bottom = displayRect.bottom + (int) (bufferHeight / 2f);
+        return rect;
+    }
+
+    /**
+     * 根据现在的显示Rect更新BufferRect。
+     *
+     * @param bufferRect  现有的BufferRect
+     * @param displayRect 显示的Rect
+     * @return 更新后的显示Rect。
+     */
+    public boolean updateBufferRect(@NonNull Rect bufferRect, @NonNull Rect displayRect) {
+        float extraWidth = bufferRect.width() - displayRect.width();
+        float extraHeight = bufferRect.height() - displayRect.width();
+        boolean isBufferAreaChanged = false;
+        if (displayRect.left <= bufferRect.left) {
+            bufferRect.offsetTo(displayRect.left - (int) (extraWidth / 2f), bufferRect.top);
+            isBufferAreaChanged = true;
         }
 
-        double imageAspect = (double) imageHeight / (double) imageWidth;
-        double displayAspect = (double) screenHeight / (double) screenWidth;
+        if (displayRect.top <= bufferRect.top) {
+            bufferRect.offsetTo(bufferRect.left, displayRect.top - (int) (extraHeight / 2f));
+            isBufferAreaChanged = true;
+        }
+
+        if (displayRect.right >= bufferRect.right) {
+            bufferRect.offsetTo(displayRect.left - (int) (extraWidth / 2f), bufferRect.top);
+            isBufferAreaChanged = true;
+        }
+
+        if (displayRect.bottom >= bufferRect.bottom) {
+            bufferRect.offsetTo(bufferRect.left, displayRect.top - (int) (extraHeight / 2f));
+            isBufferAreaChanged = true;
+        }
+
+        return isBufferAreaChanged;
+    }
+
+    /**
+     * 初始化裁剪Rect。
+     */
+    public Rect initDisplayRect(
+            int x,
+            int y,
+            @NonNull Rect imageRect,
+            @NonNull Rect screenRect,
+            boolean isDisplayAll,
+            boolean isCenter) {
+        Rect rect = new Rect();
+        if (imageRect.height() == 0 || imageRect.width() == 0 || screenRect.width() == 0
+                || screenRect.height() == 0) {
+            return rect;
+        }
+
+        double imageAspect = (double) imageRect.height() / (double) imageRect.width();
+        double displayAspect = (double) screenRect.height() / (double) screenRect.width();
 
         if (imageAspect > displayAspect) {
             //Long
             if (isDisplayAll) {
                 //All
-                int cutWidth = (int) ((double) imageHeight / displayAspect);
-                cutRect.left = -(cutWidth / 2 - imageWidth / 2);
-                cutRect.right = imageWidth / 2 + cutWidth / 2;
-                cutRect.top = 0;
-                cutRect.bottom = imageHeight;
+                int displayWidth = (int) ((double) imageRect.height() / displayAspect);
+                rect.left = -(displayWidth / 2 - imageRect.width() / 2);
+                rect.right = imageRect.width() / 2 + displayWidth / 2;
+                rect.top = 0;
+                rect.bottom = imageRect.height();
             } else {
                 //Part
-                int cutHeight = (int) ((double) imageWidth * displayAspect);
+                int cutHeight = (int) ((double) imageRect.width() * displayAspect);
                 if (isCenter) {
                     //Center
-                    cutRect.left = 0;
-                    cutRect.top = imageHeight / 2 - cutHeight / 2;
+                    rect.left = 0;
+                    rect.top = imageRect.height() / 2 - cutHeight / 2;
                 } else {
                     //Start
-                    cutRect.left = x;
-                    cutRect.top = y;
+                    rect.left = x;
+                    rect.top = y;
                 }
-                cutRect.right = cutRect.left + imageWidth;
-                cutRect.bottom = cutRect.top + cutHeight;
+                rect.right = rect.left + imageRect.width();
+                rect.bottom = rect.top + cutHeight;
             }
         } else {
             //Wide
             if (isDisplayAll) {
                 //All
-                int cutHeight = (int) ((double) imageWidth * displayAspect);
-                cutRect.left = 0;
-                cutRect.right = imageWidth;
-                cutRect.top = -(cutHeight / 2 - imageHeight / 2);
-                cutRect.bottom = imageHeight / 2 + cutHeight / 2;
+                int displayHeight = (int) ((double) imageRect.width() * displayAspect);
+                rect.left = 0;
+                rect.right = imageRect.width();
+                rect.top = -(displayHeight / 2 - imageRect.height() / 2);
+                rect.bottom = imageRect.height() / 2 + displayHeight / 2;
             } else {
                 //Part
-                int cutWidth = (int) ((double) imageHeight / displayAspect);
+                int cutWidth = (int) ((double) imageRect.height() / displayAspect);
                 if (isCenter) {
                     //Center
-                    cutRect.left = imageWidth / 2 - cutWidth / 2;
-                    cutRect.top = 0;
+                    rect.left = imageRect.width() / 2 - cutWidth / 2;
+                    rect.top = 0;
                 } else {
                     //Start
-                    cutRect.left = x;
-                    cutRect.top = y;
+                    rect.left = x;
+                    rect.top = y;
                 }
-                cutRect.right = cutRect.left + cutWidth;
-                cutRect.bottom = cutRect.top + imageHeight;
+                rect.right = rect.left + cutWidth;
+                rect.bottom = rect.top + imageRect.height();
             }
         }
 
-        return cutRect;
-    }
-
-    /**
-     * 初始化显示的rect
-     *
-     * @param screenHeight 屏幕高度
-     * @param screenWidth  屏幕宽度
-     */
-    private Rect getInitDisplayRect(int screenHeight, int screenWidth) {
-        Rect displayRect = new Rect();
-        displayRect.top = 0;
-        displayRect.left = 0;
-        displayRect.bottom = screenHeight;
-        displayRect.right = screenWidth;
-        return displayRect;
+        return rect;
     }
 
     /**
      * 更新移动后的裁剪Rect。
-     *
-     * @param cutRect     裁剪Rect
-     * @param offsetX     X轴偏移量
-     * @param offsetY     Y轴偏移量
-     * @param cutWidth    裁剪宽度
-     * @param displayRect 显示Rect
-     * @return 更新过的Rect
      */
-    public Rect updateCutRect(@NonNull Rect cutRect, int offsetX, int offsetY, int cutWidth,
-            @NonNull Rect displayRect) {
-        cutRect.offset(-offsetX, -offsetY);
+    public Rect updateDisplayRect(
+            @NonNull Rect displayRect,
+            int offsetX,
+            int offsetY,
+            @NonNull Rect imageRect) {
 
-        double dispWidth = displayRect.width();
-        double dispHeight = displayRect.height();
+        int displayWidth = displayRect.width();
+        int displayHeight = displayRect.height();
 
-        if (dispHeight == 0) {
-            return cutRect;
+        displayRect.offset(-offsetX, -offsetY);
+
+        if (displayRect.left <= -displayWidth) {
+            displayRect.left = -displayWidth + 1;
         }
 
-        double ratio = dispHeight / dispWidth;
-        double cutHeight = cutWidth * ratio;
+        if (displayRect.top <= -displayHeight) {
+            displayRect.top = -displayHeight + 1;
+        }
 
-        cutRect.right = cutRect.left + cutWidth;
-        cutRect.bottom = cutRect.top + (int) cutHeight;
+        if (displayRect.left >= displayWidth) {
+            displayRect.left = displayWidth - 1;
+        }
 
-        return cutRect;
+        if (displayRect.top >= imageRect.height()) {
+            displayRect.top = imageRect.height() - 1;
+        }
+
+        displayRect.right = displayRect.left + displayWidth;
+        displayRect.bottom = displayRect.top + displayHeight;
+        return displayRect;
+    }
+
+    /**
+     * 初始化指示Bitmap中有效部分的Rect。
+     *
+     * @param displayRect 屏幕区域
+     * @param bufferRect  缓存区域
+     * @param imageRect   图片属性Rect
+     * @return 初始化之后的SrcRect
+     */
+    private Rect initSrcRect(
+            @NonNull Rect displayRect,
+            @NonNull Rect bufferRect,
+            @NonNull Rect imageRect) {
+        Rect rect = new Rect();
+        return updateSrcRect(rect, displayRect, bufferRect, imageRect);
+    }
+
+    /**
+     * 更新指示Bitmap中有效部分的Rect。
+     *
+     * @param srcRect     需要更新的Rect
+     * @param displayRect 屏幕区域
+     * @param bufferRect  缓存区域
+     * @param imageRect   图片属性Rect
+     * @return 更新之后的SrcRect
+     */
+    private Rect updateSrcRect(
+            @NonNull Rect srcRect,
+            @NonNull Rect displayRect,
+            @NonNull Rect bufferRect,
+            @NonNull Rect imageRect) {
+        float displayHeight = displayRect.height();
+        float displayWidth = displayRect.width();
+        int deltaX = displayRect.left - bufferRect.left;
+        int deltaY = displayRect.top - bufferRect.top;
+
+        //left
+        if (displayRect.left >= 0) {
+            //in image
+            srcRect.left = deltaX;
+        } else {
+            //out of image
+            srcRect.left = -displayRect.left + deltaX;
+        }
+
+        //top
+        if (displayRect.top >= 0) {
+            //in image
+            srcRect.top = deltaY;
+        } else {
+            //out of image
+            srcRect.top = -displayRect.top + deltaY;
+        }
+
+        //right
+        if (displayRect.right <= imageRect.width()) {
+            //in image
+            srcRect.right = (int) displayWidth + deltaX;
+        } else {
+            //out of image
+            srcRect.right = imageRect.width() - displayRect.left + deltaX;
+        }
+
+        //bottom
+        if (displayRect.bottom <= imageRect.height()) {
+            //in image
+            srcRect.bottom = (int) displayHeight + deltaY;
+        } else {
+            //out of image
+            srcRect.bottom = imageRect.height() - displayRect.top + deltaY;
+        }
+
+        return srcRect;
+    }
+
+    /**
+     * 初始化用于显示的rect。
+     * 该Rect对应于屏幕坐标系，代表了「在屏幕上的哪个位置需要作图」这一点。
+     *
+     * @param bufferRect  缓存的Rect
+     * @param displayRect 显示区域Rect
+     * @param srcRect     Bitmap中对应的部分Rect
+     * @param screenRect  屏幕Rect
+     * @return DestRect
+     */
+    private Rect initDestRect(
+            @NonNull Rect bufferRect,
+            @NonNull Rect displayRect,
+            @NonNull Rect srcRect,
+            @NonNull Rect screenRect) {
+        Rect rect = new Rect();
+        return updateDestRect(rect, bufferRect, displayRect, srcRect, screenRect);
+    }
+
+    /**
+     * 更新有效显示区域的Rect。
+     * 在该区域中会画上对应的Bitmap内容。
+     *
+     * @param destRect    需要更新的Rect
+     * @param bufferRect  缓存的Rect
+     * @param displayRect 显示区域Rect
+     * @param srcRect     Bitmap中对应的部分Rect
+     * @param screenRect  屏幕Rect
+     * @return 更新后的DestRect
+     */
+    private Rect updateDestRect(
+            @NonNull Rect destRect,
+            @NonNull Rect bufferRect,
+            @NonNull Rect displayRect,
+            @NonNull Rect srcRect,
+            @NonNull Rect screenRect) {
+
+        Rect tempRect = new Rect(srcRect);
+        tempRect.offset(bufferRect.left, bufferRect.top);
+
+        float displayWidth = displayRect.width();
+        float screenWidth = screenRect.width();
+        float ratio = displayWidth / screenWidth;
+
+        float deltaLeft = (tempRect.left - displayRect.left) / ratio;
+        float deltaTop = (tempRect.top - displayRect.top) / ratio;
+        float deltaRight = (displayRect.right - tempRect.right) / ratio;
+        float deltaBottom = (displayRect.bottom - tempRect.bottom) / ratio;
+
+        destRect.left = (int) deltaLeft;
+        destRect.top = (int) deltaTop;
+        destRect.right = screenRect.right - (int) deltaRight;
+        destRect.bottom = screenRect.bottom - (int) deltaBottom;
+
+        return destRect;
     }
 
     /**
      * 根据手指的移动来修改解码区域
      *
-     * @param fingerDeltaX 手指移动的距离X坐标
-     * @param fingerDeltaY 手指移动的距离Y坐标
-     * @param cutRect      裁剪区域
-     * @param displayRect  显示区域
+     * @param fingerDeltaX 手指移动的像素X
+     * @param fingerDeltaY 手指移动的像素Y
+     * @param bufferRect   缓存的区域
+     * @param displayRect  显示区域在Buffer区域中的位置。
+     * @param screenRect   表征屏幕属性的rect
+     * @param imageRect    表征图片属性的rect
+     * @return 移动指挥的displayRect
      */
-    private Rect moveCutRegion(double fingerDeltaX, double fingerDeltaY, Rect cutRect,
-            Rect displayRect) {
-        double scaleRatio = getScaledRatio(cutRect, displayRect);
-        double cutDeltaX = fingerDeltaX / scaleRatio;
-        double cutDeltaY = fingerDeltaY / scaleRatio;
-        return updateCutRect(cutRect, (int) cutDeltaX, (int) cutDeltaY, cutRect.width(),
-                displayRect);
+    private Rect moveDisplayRegion(
+            double fingerDeltaX,
+            double fingerDeltaY,
+            @NonNull Rect bufferRect,
+            @NonNull Rect displayRect,
+            @NonNull Rect screenRect,
+            @NonNull Rect imageRect) {
+        double scaleRatio = getScaledRatio(displayRect, screenRect);
+        double displayDeltaX = fingerDeltaX / scaleRatio;
+        double displayDeltaY = fingerDeltaY / scaleRatio;
+        updateDisplayRect(displayRect, (int) displayDeltaX, (int) displayDeltaY, imageRect);
+        if (updateBufferRect(bufferRect, displayRect)) {
+            //Decode
+            decode(mDecoder, mDecodeOptions, bufferRect);
+        }
+        updateSrcRect(mSrcRect, displayRect, bufferRect, imageRect);
+        updateDestRect(mDestRect, bufferRect, displayRect, mSrcRect, screenRect);
+        return displayRect;
     }
 
     /**
@@ -372,23 +672,26 @@ public class DetailedImageView extends View {
      * @param cutRect     裁剪区域
      * @param displayRect 显示区域
      */
-    private Rect scaleCutRegion(int pivotX, int pivotY, double scaleRatio, @NonNull Rect cutRect,
+    private Rect scaleCutRegion(
+            int pivotX,
+            int pivotY,
+            double scaleRatio,
+            @NonNull Rect cutRect,
             @NonNull Rect displayRect) {
-        return updateCutRect(cutRect, 0, 0, 0, displayRect);// TODO: 16/1/11 UPDATE
+        return null;// TODO: 16/1/13
     }
 
     /**
      * 使用给定的decoder按照option和rect进行区域解码。
-     *
-     * @param decoder 解码器
-     * @param options 解码选项
-     * @param cutRect 解码区域
      */
-    private void decode(BitmapRegionDecoder decoder, BitmapFactory.Options options, Rect cutRect) {
+    private void decode(
+            @NonNull BitmapRegionDecoder decoder,
+            @NonNull BitmapFactory.Options options,
+            @NonNull Rect bufferRect) {
         if (options.inBitmap == null) {
-            options.inBitmap = decoder.decodeRegion(cutRect, options);
+            options.inBitmap = decoder.decodeRegion(bufferRect, options);
         } else {
-            decoder.decodeRegion(cutRect, options);
+            decoder.decodeRegion(bufferRect, options);
         }
     }
 
@@ -396,11 +699,83 @@ public class DetailedImageView extends View {
      * 获取当前裁剪区域在显示中的放缩倍数。
      * 如：600宽度的图片显示在1080宽度的手机屏幕上，放缩倍数为1080/600=1.8。
      *
-     * @param cutRect     裁剪区域
-     * @param displayRect 显示区域
-     * @return 放缩倍数
+     * @param cutRect    裁剪区域
+     * @param screenRect 屏幕区域
+     * @return 放缩倍数m
      */
-    private double getScaledRatio(@NonNull Rect cutRect, @NonNull Rect displayRect) {
-        return (double) displayRect.width() / (double) cutRect.width();
+    private double getScaledRatio(@NonNull Rect cutRect, @NonNull Rect screenRect) {
+        return (double) screenRect.width() / (double) cutRect.width();
+    }
+
+    /**
+     * 滑动控制器。
+     */
+    private class ScrollTimerTask extends TimerTask {
+
+        public static final int POST_INTERVAL = 17;//1000/60
+
+        private static final float ACCELERATION = 0.01f;
+
+        private float mVelocityX, mVelocityY;
+
+        public ScrollTimerTask(float velocityX, float velocityY) {
+            mVelocityX = velocityX / 1000;
+            mVelocityY = velocityY / 1000;
+        }
+
+        @Override
+        public void run() {
+            float deltaX = getDeltaMovement(mVelocityX, POST_INTERVAL, ACCELERATION);
+            float deltaY = getDeltaMovement(mVelocityY, POST_INTERVAL, ACCELERATION);
+            mVelocityX = getLaterSpeed(mVelocityX, POST_INTERVAL, ACCELERATION);
+            mVelocityY = getLaterSpeed(mVelocityY, POST_INTERVAL, ACCELERATION);
+            if (deltaX != 0 || deltaY != 0) {
+                moveDisplayRegion(deltaX, deltaY, mBufferRect, mDisplayRect, mScreenRect,
+                        mImageRect);
+                postInvalidate();
+            } else {
+                mScrollTimerTask.cancel();
+                mTimer.cancel();
+                mTimer.purge();
+            }
+        }
+
+        /**
+         * 获取匀减速运动的距离。单位为像素。正直向下(右)，负值向上(左)。
+         *
+         * @param v0 初始速度
+         * @param t  持续时间
+         * @param a  减速度（绝对值）
+         * @return 移动距离
+         */
+        private float getDeltaMovement(float v0, float t, float a) {
+            float absV0 = Math.abs(v0);
+            float flag = v0 >= 0 ? 1 : -1;
+
+            if (absV0 / a <= t) {
+                t = absV0 / a;
+            }
+
+            return (absV0 * t - a * (float) Math.pow(t, 2) / 2f) * flag;
+        }
+
+        /**
+         * 获取在减速度为a时，经过t时刻后的速度。单位：像素/毫秒
+         *
+         * @param v0 初速度
+         * @param t  时间
+         * @param a  加速度（绝对值）
+         * @return 经过T时间之后的速度。
+         */
+        private float getLaterSpeed(float v0, float t, float a) {
+            float absV0 = Math.abs(v0);
+            int flag = v0 >= 0 ? 1 : -1;
+
+            if (absV0 / a <= t) {
+                return 0;
+            }
+
+            return (absV0 - a * t) * flag;
+        }
     }
 }
