@@ -34,7 +34,11 @@ public class DetailedImageView extends View {
      * 在裁剪出用于一屏显示的Bitmap的时候，额外缓冲的比例。例如屏幕大小100*100，在0.2的缓冲比下，
      * 会缓冲120*120大小的图片。
      */
-    public static final float BUFFER_RATIO = 3f;
+    public static final float BUFFER_RATIO = 1f;
+
+    private boolean isDisplayAll = true;
+
+    private boolean isCenter = false;
 
     /**
      * 解码选项
@@ -183,16 +187,16 @@ public class DetailedImageView extends View {
         mScreenRect = initScreenRect(getMeasuredWidth(), getMeasuredHeight());
 
         //Init Display rect
-        mDisplayRect = initDisplayRect(0, 0, mImageRect, mScreenRect, false, false);
+        mDisplayRect = initDisplayRect(0, 0, mImageRect, mScreenRect, isDisplayAll, isCenter);
 
         //Init buffer rect
-        mBufferRect = initBufferRect(mDisplayRect, mImageRect, BUFFER_RATIO);
+        mBufferRect = initBufferRect(mDisplayRect, BUFFER_RATIO);
 
-        //Init image rect
-        mSrcRect = initSrcRect(mDisplayRect, mBufferRect, mImageRect);
+        //Init image rect - sample ratio = 1
+        mSrcRect = initSrcRect(mDisplayRect, mBufferRect, mImageRect, 1);
 
         //Init dest rect
-        mDestRect = initDestRect(mBufferRect, mDisplayRect, mSrcRect, mScreenRect);
+        mDestRect = initDestRect(mBufferRect, mDisplayRect, mSrcRect, mScreenRect, 1);
 
         //Update sample size
         mDecodeOptions.inSampleSize = getSampleSize(mBufferRect, mDestRect);
@@ -204,6 +208,9 @@ public class DetailedImageView extends View {
         if (mDecodeOptions.inBitmap == null) {
             decode(mDecoder, mDecodeOptions, mBufferRect);
         }
+        updateSrcRect(mSrcRect, mDisplayRect, mBufferRect, mImageRect, mDecodeOptions.inSampleSize);
+        updateDestRect(mDestRect, mBufferRect, mDisplayRect, mSrcRect, mScreenRect,
+                mDecodeOptions.inSampleSize);
         canvas.drawBitmap(mDecodeOptions.inBitmap, mSrcRect, mDestRect, null);
     }
 
@@ -319,21 +326,42 @@ public class DetailedImageView extends View {
     public int getSampleSize(
             @NonNull Rect sampleRect,
             @NonNull Rect displayRect) {
-        int sampleLength = sampleRect.right - sampleRect.left;
-        int displayLength = displayRect.right - displayRect.left;
-
-        if (sampleLength <= 0 || displayLength <= 0) {
-            return 1;
-        }
-
-        if (sampleLength <= displayLength) {
-            //截取部分的像素少于显示区域的像素
+        float sampleRatioX = (float) sampleRect.width() / (float) displayRect.width();
+        float sampleRatioY = (float) sampleRect.height() / (float) displayRect.height();
+        float sampleRatio = Math.max(sampleRatioX, sampleRatioY);
+        if (sampleRatio <= 1) {
             return 1;
         } else {
-            //截取部分的像素比显示区域的像素高，需要设置更高的采样尺寸以减少内存消耗
-            double ratio = (double) sampleLength / (double) displayLength;
-            return (int) ratio;
+            return getNearScale(sampleRatio);
         }
+    }
+
+    /**
+     * 获得一个数的最近2次幂。
+     *
+     * @param imageScale 输入数字
+     * @return 最近的2次幂。
+     */
+    public int getNearScale(float imageScale) {
+        if (imageScale <= 1) {
+            return 1;
+        }
+        int scale = (int) imageScale;
+        if (scale == 1) {
+            return 1;
+        }
+        int startS = 1;
+        if (scale > 2) {
+            do {
+                startS *= 2;
+            } while ((scale = scale / 2) > 2);
+        }
+        if (Math.abs(startS - imageScale) < Math.abs(startS * 2 - imageScale)) {
+            scale = startS;
+        } else {
+            scale = startS * 2;
+        }
+        return scale;
     }
 
     /**
@@ -367,22 +395,17 @@ public class DetailedImageView extends View {
      * 根据显示区域来初始化Buffer区域。
      *
      * @param displayRect 显示区域Rect
-     * @param imageRect   图片区域Rect
      * @param bufferRatio Buffer的比例
      * @return 显示区域
      */
     public Rect initBufferRect(
             @NonNull Rect displayRect,
-            @NonNull Rect imageRect,
             float bufferRatio) {
         Rect rect = new Rect();
         float dispWidth = displayRect.width();
         float dispHeight = displayRect.height();
         float bufferWidth = bufferRatio * dispWidth;
         float bufferHeight = bufferRatio * dispHeight;
-        bufferWidth = bufferWidth >= 2 * imageRect.width() ? 2 * imageRect.width() : bufferWidth;
-        bufferHeight = bufferHeight >= 2 * imageRect.height() ? 2 * imageRect.height()
-                : bufferHeight;
         rect.left = displayRect.left - (int) (bufferWidth / 2f);
         rect.top = displayRect.top - (int) (bufferHeight / 2f);
         rect.right = displayRect.right + (int) (bufferWidth / 2f);
@@ -534,8 +557,8 @@ public class DetailedImageView extends View {
             displayRect.top = -displayHeight + 1;
         }
 
-        if (displayRect.left >= displayWidth) {
-            displayRect.left = displayWidth - 1;
+        if (displayRect.left >= imageRect.width()) {
+            displayRect.left = imageRect.width() - 1;
         }
 
         if (displayRect.top >= imageRect.height()) {
@@ -558,9 +581,10 @@ public class DetailedImageView extends View {
     private Rect initSrcRect(
             @NonNull Rect displayRect,
             @NonNull Rect bufferRect,
-            @NonNull Rect imageRect) {
+            @NonNull Rect imageRect,
+            int sampleSize) {
         Rect rect = new Rect();
-        return updateSrcRect(rect, displayRect, bufferRect, imageRect);
+        return updateSrcRect(rect, displayRect, bufferRect, imageRect, sampleSize);
     }
 
     /**
@@ -576,7 +600,8 @@ public class DetailedImageView extends View {
             @NonNull Rect srcRect,
             @NonNull Rect displayRect,
             @NonNull Rect bufferRect,
-            @NonNull Rect imageRect) {
+            @NonNull Rect imageRect,
+            int sampleSize) {
         float displayHeight = displayRect.height();
         float displayWidth = displayRect.width();
         int deltaX = displayRect.left - bufferRect.left;
@@ -618,6 +643,12 @@ public class DetailedImageView extends View {
             srcRect.bottom = imageRect.height() - displayRect.top + deltaY;
         }
 
+        //scale
+        srcRect.left /= sampleSize;
+        srcRect.right /= sampleSize;
+        srcRect.top /= sampleSize;
+        srcRect.bottom /= sampleSize;
+
         return srcRect;
     }
 
@@ -635,9 +666,10 @@ public class DetailedImageView extends View {
             @NonNull Rect bufferRect,
             @NonNull Rect displayRect,
             @NonNull Rect srcRect,
-            @NonNull Rect screenRect) {
+            @NonNull Rect screenRect,
+            int sampleSize) {
         Rect rect = new Rect();
-        return updateDestRect(rect, bufferRect, displayRect, srcRect, screenRect);
+        return updateDestRect(rect, bufferRect, displayRect, srcRect, screenRect, sampleSize);
     }
 
     /**
@@ -656,19 +688,32 @@ public class DetailedImageView extends View {
             @NonNull Rect bufferRect,
             @NonNull Rect displayRect,
             @NonNull Rect srcRect,
-            @NonNull Rect screenRect) {
+            @NonNull Rect screenRect,
+            int sampleSize) {
+        Rect tempBuffer = new Rect(bufferRect);
+        Rect tempDisplay = new Rect(displayRect);
+        Rect tempSrc = new Rect(srcRect);
 
-        Rect tempRect = new Rect(srcRect);
-        tempRect.offset(bufferRect.left, bufferRect.top);
+        tempBuffer.left /= sampleSize;
+        tempBuffer.right /= sampleSize;
+        tempBuffer.top /= sampleSize;
+        tempBuffer.bottom /= sampleSize;
 
-        float displayWidth = displayRect.width();
+        tempDisplay.left /= sampleSize;
+        tempDisplay.right /= sampleSize;
+        tempDisplay.top /= sampleSize;
+        tempDisplay.bottom /= sampleSize;
+
+        tempSrc.offset(tempBuffer.left, tempBuffer.top);
+
+        float displayWidth = tempDisplay.width();
         float screenWidth = screenRect.width();
         float ratio = displayWidth / screenWidth;
 
-        float deltaLeft = (tempRect.left - displayRect.left) / ratio;
-        float deltaTop = (tempRect.top - displayRect.top) / ratio;
-        float deltaRight = (displayRect.right - tempRect.right) / ratio;
-        float deltaBottom = (displayRect.bottom - tempRect.bottom) / ratio;
+        float deltaLeft = (tempSrc.left - tempDisplay.left) / ratio;
+        float deltaTop = (tempSrc.top - tempDisplay.top) / ratio;
+        float deltaRight = (tempDisplay.right - tempSrc.right) / ratio;
+        float deltaBottom = (tempDisplay.bottom - tempSrc.bottom) / ratio;
 
         destRect.left = (int) deltaLeft;
         destRect.top = (int) deltaTop;
@@ -704,8 +749,6 @@ public class DetailedImageView extends View {
             //Decode
             decode(mDecoder, mDecodeOptions, bufferRect);
         }
-        updateSrcRect(mSrcRect, displayRect, bufferRect, imageRect);
-        updateDestRect(mDestRect, bufferRect, displayRect, mSrcRect, screenRect);
         return displayRect;
     }
 

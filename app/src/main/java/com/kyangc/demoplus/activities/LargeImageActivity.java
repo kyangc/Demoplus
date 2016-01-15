@@ -4,7 +4,6 @@ import com.kyangc.demoplus.R;
 import com.kyangc.demoplus.views.DetailedImageView;
 import com.kyangc.demoplus.views.LargeImageView;
 import com.kyangc.demoplus.views.LongImageView;
-import com.kyangc.demoplus.views.PhotoView;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -29,7 +28,7 @@ public class LargeImageActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         try {
-            mLongImageView.setInputStream(getAssets().open("ccc.jpg"));
+            mLongImageView.setInputStream(getAssets().open("111.jpg"));
         } catch (IOException e) {
             e.printStackTrace();
         }
