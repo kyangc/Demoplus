@@ -8,7 +8,7 @@ import com.kyangc.developkit.base.BaseActivity;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 public class BannerActivity extends BaseActivity {
 
@@ -37,7 +38,7 @@ public class BannerActivity extends BaseActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 2; i++) {
             list.add(i);
         }
         urls.add("http://pic2.ooopic.com/01/03/51/25b1OOOPIC19.jpg");
@@ -48,17 +49,24 @@ public class BannerActivity extends BaseActivity {
 
         mAdapter = new LoopViewPagerAdapter<Integer>(mViewPager, list) {
             @Override
-            public View getView(Integer data) {
+            public View getView(final int position, Integer data) {
+                Timber.i("Position:" + position);
                 View view = getLayoutInflater().inflate(R.layout.item, null);
                 TextView tv = (TextView) view.findViewById(R.id.tvNumber);
                 SimpleDraweeView dv = (SimpleDraweeView) view.findViewById(R.id.ivSD);
                 tv.setText("" + list.get(data));
                 dv.setImageURI(Uri.parse(urls.get(data)));
+                dv.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Timber.i("Click" + position);
+                    }
+                });
                 return view;
             }
         };
         mViewPager.setAdapter(mAdapter);
         mViewPager.setScrollSpeed(0.5f);
-        mViewPager.setAutoScroll(true, 2000, 2000);
+        mViewPager.setAutoScroll(false, 3000, 3000);
     }
 }

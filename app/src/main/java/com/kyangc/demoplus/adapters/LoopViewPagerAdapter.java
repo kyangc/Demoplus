@@ -33,15 +33,9 @@ public abstract class LoopViewPagerAdapter<T> extends PagerAdapter {
      */
     List<T> mDataSet;
 
-    /**
-     * 数据量
-     */
-    int mDataSize = 0;
-
     public LoopViewPagerAdapter(ViewPager viewPager, List<T> dataSet) {
         mViewPager = viewPager;
         mDataSet = dataSet;
-        mDataSize = dataSet.size();
     }
 
     /**
@@ -49,7 +43,6 @@ public abstract class LoopViewPagerAdapter<T> extends PagerAdapter {
      */
     public void setDataSet(@NonNull List<T> dataSet) {
         mDataSet = dataSet;
-        mDataSize = dataSet.size();
     }
 
     /**
@@ -58,14 +51,33 @@ public abstract class LoopViewPagerAdapter<T> extends PagerAdapter {
      * @param position page位
      * @return 该page位上的数据
      */
-    private T getDataAt(int position) {
+    public T getDataAt(int position) {
         return mDataSet == null ? null
-                : mDataSet.get(getRelevantDataPosition(position, mDataSet.size()));
+                : mDataSet.get(getRelevantDataPosition(position));
+    }
+
+    /**
+     * 获取数据量的数量
+     *
+     * @return 数据数量
+     */
+    public int getDataSize() {
+        return mDataSet == null ? 0 : mDataSet.size();
+    }
+
+    /**
+     * 获取ViewPager起始的页码。
+     *
+     * @return 起始页码。
+     */
+    public int getStartIndex() {
+        return getDataSize() <= 1 ? 0
+                : (FAKE_FACTOR / 2 > 1 ? FAKE_FACTOR / 2 * getDataSize() + 1 : 1);
     }
 
     @Override
     public int getCount() {
-        return mDataSet == null ? 0 : FAKE_FACTOR * mDataSet.size() + 2;
+        return getDataSize() <= 1 ? getDataSize() : FAKE_FACTOR * getDataSize() + 2;
     }
 
     @Override
@@ -75,7 +87,7 @@ public abstract class LoopViewPagerAdapter<T> extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        View view = getView(getDataAt(position));
+        View view = getView(getRelevantDataPosition(position), getDataAt(position));
         container.addView(view);
         return view;
     }
@@ -89,9 +101,15 @@ public abstract class LoopViewPagerAdapter<T> extends PagerAdapter {
     public void finishUpdate(ViewGroup container) {
         int currentPos = mViewPager.getCurrentItem();
         if (currentPos == 0) {
-            mViewPager.setCurrentItem(FAKE_FACTOR * mDataSize, false);
-        } else if (currentPos == FAKE_FACTOR * mDataSize + 1) {
-            mViewPager.setCurrentItem(FAKE_FACTOR * mDataSize / 2 + 1, false);
+            if (getDataSize() > 1) {
+                mViewPager.setCurrentItem(FAKE_FACTOR * getDataSize(), false);
+            }
+        } else if (currentPos == FAKE_FACTOR * getDataSize() + 1) {
+            if (FAKE_FACTOR / 2 > 1) {
+                mViewPager.setCurrentItem(FAKE_FACTOR * getDataSize() / 2 + 1, false);
+            } else {
+                mViewPager.setCurrentItem(1, false);
+            }
         }
     }
 
@@ -101,27 +119,26 @@ public abstract class LoopViewPagerAdapter<T> extends PagerAdapter {
      * @param data 实例化View所需要的数据
      * @return 实例化之后的View
      */
-    public abstract View getView(T data);
+    public abstract View getView(int position, T data);
 
     /**
      * 获取到对应位置上的数据序号。
      *
      * @param itemPosition page位置
-     * @param dataSize     数据量
      * @return 数据在数据表中的位置。
      */
-    private int getRelevantDataPosition(int itemPosition, int dataSize) {
-        if (dataSize == 0) {
+    public int getRelevantDataPosition(int itemPosition) {
+        if (getDataSize() == 0) {
             return 0;
         }
 
         if (itemPosition == 0) {
-            return dataSize - 1;
+            return getDataSize() - 1;
         } else {
-            if (itemPosition == FAKE_FACTOR * dataSize + 1) {
+            if (itemPosition == FAKE_FACTOR * getDataSize() + 1) {
                 return 0;
             } else {
-                return (itemPosition - 1) % dataSize;
+                return (itemPosition - 1) % getDataSize();
             }
         }
     }

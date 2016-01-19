@@ -47,6 +47,11 @@ public class LoopViewPager extends ViewPager implements View.OnTouchListener {
     private ScheduledTask mScheduledTask;
 
     /**
+     * 绑定的Adapter
+     */
+    private LoopViewPagerAdapter mAdapter;
+
+    /**
      * 是否正在滚动
      */
     private boolean mIsScrolling = false;
@@ -64,7 +69,7 @@ public class LoopViewPager extends ViewPager implements View.OnTouchListener {
     public void setAdapter(PagerAdapter adapter) {
         if (adapter instanceof LoopViewPagerAdapter) {
             super.setAdapter(adapter);
-            setCurrentItem(1);
+            mAdapter = (LoopViewPagerAdapter) adapter;
         }
     }
 
@@ -131,6 +136,7 @@ public class LoopViewPager extends ViewPager implements View.OnTouchListener {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
+        setCurrentItem(mAdapter.getStartIndex());
         if (mIsAutoScroll) {
             startScroll();
         }
@@ -207,6 +213,28 @@ public class LoopViewPager extends ViewPager implements View.OnTouchListener {
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void addOnPageChangeListener(final OnPageChangeListener listener) {
+        super.addOnPageChangeListener(new OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset,
+                    int positionOffsetPixels) {
+                listener.onPageScrolled(mAdapter.getRelevantDataPosition(position), positionOffset,
+                        positionOffsetPixels);
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                listener.onPageSelected(mAdapter.getRelevantDataPosition(position));
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                listener.onPageScrollStateChanged(state);
+            }
+        });
     }
 
     /**
