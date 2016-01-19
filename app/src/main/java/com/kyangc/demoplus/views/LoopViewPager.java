@@ -32,6 +32,11 @@ public class LoopViewPager extends ViewPager implements View.OnTouchListener {
     private boolean mIsAutoScroll = false;
 
     /**
+     * 是否正向滚动
+     */
+    private boolean mIsForward = true;
+
+    /**
      * 开始滚动之前的延时
      */
     private long mDelay = 0;
@@ -80,9 +85,11 @@ public class LoopViewPager extends ViewPager implements View.OnTouchListener {
      * @param scrollInterval 轮播却换page间隔
      * @param delay          开始第一次切换时的间隔
      */
-    public void setAutoScroll(boolean isAutoScroll, long scrollInterval, long delay) {
+    public void setAutoScroll(boolean isAutoScroll, boolean isForward, long scrollInterval,
+            long delay) {
         this.mIsAutoScroll = isAutoScroll;
         this.mScrollInterval = scrollInterval;
+        this.mIsForward = isForward;
         this.mDelay = delay;
     }
 
@@ -102,7 +109,7 @@ public class LoopViewPager extends ViewPager implements View.OnTouchListener {
                         @Override
                         public void onExecute() {
                             if (getChildCount() > 1) {
-                                scrollToItem(getCurrentItem() + 1);
+                                scrollToItem(getCurrentItem() + ((mIsForward ? 1 : -1)));
                             }
                         }
                     });
@@ -128,7 +135,9 @@ public class LoopViewPager extends ViewPager implements View.OnTouchListener {
                 || action == MotionEvent.ACTION_MOVE) {
             stopScroll();
         } else if (action == MotionEvent.ACTION_UP) {
-            startScroll();
+            if (mIsAutoScroll) {
+                startScroll();
+            }
         }
         return false;
     }

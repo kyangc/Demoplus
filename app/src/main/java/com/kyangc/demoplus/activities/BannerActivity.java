@@ -8,7 +8,6 @@ import com.kyangc.developkit.base.BaseActivity;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
@@ -17,7 +16,6 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
 public class BannerActivity extends BaseActivity {
 
@@ -38,7 +36,7 @@ public class BannerActivity extends BaseActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        for (int i = 0; i < 2; i++) {
+        for (int i = 0; i < 5; i++) {
             list.add(i);
         }
         urls.add("http://pic2.ooopic.com/01/03/51/25b1OOOPIC19.jpg");
@@ -49,9 +47,12 @@ public class BannerActivity extends BaseActivity {
 
         mAdapter = new LoopViewPagerAdapter<Integer>(mViewPager, list) {
             @Override
-            public View getView(final int position, Integer data) {
-                Timber.i("Position:" + position);
-                View view = getLayoutInflater().inflate(R.layout.item, null);
+            public View inflateView(int position, Integer data) {
+                return getLayoutInflater().inflate(R.layout.item, null);
+            }
+
+            @Override
+            public void updateView(View view, int position, Integer data) {
                 TextView tv = (TextView) view.findViewById(R.id.tvNumber);
                 SimpleDraweeView dv = (SimpleDraweeView) view.findViewById(R.id.ivSD);
                 tv.setText("" + list.get(data));
@@ -59,14 +60,15 @@ public class BannerActivity extends BaseActivity {
                 dv.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Timber.i("Click" + position);
+                        urls.set(0, "http://pic28.nipic.com/20130402/9252150_190139450381_2.jpg");
+                        urls.set(1, "http://pic.nipic.com/2007-11-09/200711912453162_2.jpg");
+                        mAdapter.notifyDataSetChanged();
                     }
                 });
-                return view;
             }
         };
         mViewPager.setAdapter(mAdapter);
         mViewPager.setScrollSpeed(0.5f);
-        mViewPager.setAutoScroll(false, 3000, 3000);
+        mViewPager.setAutoScroll(true, false, 3000, 1000);
     }
 }

@@ -3,6 +3,7 @@ package com.kyangc.demoplus.adapters;
 import android.support.annotation.NonNull;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -19,7 +20,7 @@ public abstract class LoopViewPagerAdapter<T> extends PagerAdapter {
     public static final String TAG = "LoopViewPagerAdapter";
 
     /**
-     * 伪造的item数量。
+     * 伪造的item数量倍数。
      */
     public static final int FAKE_FACTOR = 10;
 
@@ -32,6 +33,11 @@ public abstract class LoopViewPagerAdapter<T> extends PagerAdapter {
      * 数据实例
      */
     List<T> mDataSet;
+
+    /**
+     * View实例
+     */
+    SparseArray<View> mViewList = new SparseArray<>();
 
     public LoopViewPagerAdapter(ViewPager viewPager, List<T> dataSet) {
         mViewPager = viewPager;
@@ -87,14 +93,17 @@ public abstract class LoopViewPagerAdapter<T> extends PagerAdapter {
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        View view = getView(getRelevantDataPosition(position), getDataAt(position));
+        View view = inflateView(getRelevantDataPosition(position), getDataAt(position));
+        updateView(view, getRelevantDataPosition(position), getDataAt(position));
         container.addView(view);
+        mViewList.put(position, view);
         return view;
     }
 
     @Override
     public void destroyItem(ViewGroup container, int position, Object object) {
         container.removeView((View) object);
+        mViewList.remove(position);
     }
 
     @Override
@@ -113,13 +122,33 @@ public abstract class LoopViewPagerAdapter<T> extends PagerAdapter {
         }
     }
 
+    @Override
+    public void notifyDataSetChanged() {
+        int key;
+        for (int i = 0; i < mViewList.size(); i++) {
+            key = mViewList.keyAt(i);
+            View view = mViewList.get(key);
+            updateView(view, getRelevantDataPosition(key), getDataAt(key));
+        }
+        super.notifyDataSetChanged();
+    }
+
     /**
-     * 在Adapter中绑定View的方法，重载该方法完成page的实例化。
+     * 在Adapter中绑定View的方法，重载该方法完成page的初始化。
      *
      * @param data 实例化View所需要的数据
      * @return 实例化之后的View
      */
-    public abstract View getView(int position, T data);
+    public abstract View inflateView(int position, T data);
+
+    /**
+     * 更新View、填充内容用的方法。
+     *
+     * @param view     需要更新的View
+     * @param position 该View的位置 - 对应的数据位置
+     * @param data     对应的数据
+     */
+    public abstract void updateView(View view, int position, T data);
 
     /**
      * 获取到对应位置上的数据序号。
