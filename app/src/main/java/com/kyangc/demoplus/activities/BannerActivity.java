@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import timber.log.Timber;
 
 public class BannerActivity extends BaseActivity {
 
@@ -68,7 +69,19 @@ public class BannerActivity extends BaseActivity {
             }
         };
         mViewPager.setAdapter(mAdapter);
-        mViewPager.setScrollSpeed(0.5f);
-        mViewPager.setAutoScroll(true, false, 3000, 1000);
+        mViewPager.setScrollSpeed(0.8f);
+        mViewPager.setAutoScroll(true, true , 3000, 2000);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mViewPager.startScroll();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mViewPager.stopScroll();
     }
 }

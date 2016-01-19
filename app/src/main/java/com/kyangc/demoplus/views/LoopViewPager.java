@@ -99,7 +99,20 @@ public class LoopViewPager extends ViewPager implements View.OnTouchListener {
     public void startScroll() {
         mIsScrolling = true;
         if (mScheduledTask != null) {
-            mScheduledTask.setInterval(mScrollInterval).setDelayInMillis(mDelay).start();
+            mScheduledTask.destroy();
+            mScheduledTask = new ScheduledTask()
+                    .setWorkingThread(ScheduledTask.WorkingHandler.WorkingOn.Main)
+                    .setInterval(mScrollInterval)
+                    .setDelayInMillis(mDelay)
+                    .setTask(new ScheduledTask.Task() {
+                        @Override
+                        public void onExecute() {
+                            if (getChildCount() > 1) {
+                                scrollToItem(getCurrentItem() + ((mIsForward ? 1 : -1)));
+                            }
+                        }
+                    });
+            mScheduledTask.start();
         } else {
             mScheduledTask = new ScheduledTask()
                     .setWorkingThread(ScheduledTask.WorkingHandler.WorkingOn.Main)
@@ -146,9 +159,6 @@ public class LoopViewPager extends ViewPager implements View.OnTouchListener {
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
         setCurrentItem(mAdapter.getStartIndex());
-        if (mIsAutoScroll) {
-            startScroll();
-        }
     }
 
     @Override
