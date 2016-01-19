@@ -1,6 +1,7 @@
 package com.kyangc.demoplus.fragments;
 
 import com.kyangc.demoplus.R;
+import com.kyangc.demoplus.activities.BannerActivity;
 import com.kyangc.demoplus.activities.LargeImageActivity;
 import com.kyangc.developkit.base.BaseFragment;
 
@@ -49,7 +50,7 @@ public class MainFragment extends BaseFragment {
         ivPhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                startActivity(new Intent(getActivity(), LargeImageActivity.class));
+                startActivity(new Intent(getActivity(), BannerActivity.class));
             }
         });
         return mView;

@@ -36,7 +36,7 @@ public class DetailedImageView extends View {
      */
     public static final float BUFFER_RATIO = 1f;
 
-    private boolean isDisplayAll = true;
+    private boolean isDisplayAll = false;
 
     private boolean isCenter = false;
 
@@ -199,7 +199,7 @@ public class DetailedImageView extends View {
         mDestRect = initDestRect(mBufferRect, mDisplayRect, mSrcRect, mScreenRect, 1);
 
         //Update sample size
-        mDecodeOptions.inSampleSize = getSampleSize(mBufferRect, mDestRect);
+        mDecodeOptions.inSampleSize = getSampleSize(mSrcRect, mDestRect);
     }
 
     @Override

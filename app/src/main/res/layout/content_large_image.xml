@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     tools:context="com.kyangc.demoplus.activities.LargeImageActivity">
 
-    <com.kyangc.demoplus.views.DetailedImageView
+    <com.kyangc.demoplus.views.NewDetailedImageView
         android:id="@+id/ivPhoto"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" />

@@ -61,6 +61,10 @@
         <activity
             android:name=".activities.LargeImageActivity"
             android:label="@string/title_activity_large_image"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".activities.BannerActivity"
+            android:label="@string/title_activity_banner"
             android:theme="@style/AppTheme"></activity>
     </application>
 
