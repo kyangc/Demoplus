@@ -8,10 +8,10 @@
     tools:context="com.kyangc.demoplus.activities.BannerActivity"
     tools:showIn="@layout/activity_banner">
 
-    <com.kyangc.demoplus.views.LoopViewPager
+    <com.kyangc.demoplus.views.InfiniteViewPager
         android:id="@+id/banner"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </com.kyangc.demoplus.views.LoopViewPager>
+    </com.kyangc.demoplus.views.InfiniteViewPager>
 </RelativeLayout>

@@ -2,8 +2,7 @@ package com.kyangc.demoplus.activities;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.kyangc.demoplus.R;
-import com.kyangc.demoplus.adapters.LoopViewPagerAdapter;
-import com.kyangc.demoplus.views.LoopViewPager;
+import com.kyangc.demoplus.views.InfiniteViewPager;
 import com.kyangc.developkit.base.BaseActivity;
 
 import android.net.Uri;
@@ -16,14 +15,13 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import timber.log.Timber;
 
 public class BannerActivity extends BaseActivity {
 
     @Bind(R.id.banner)
-    LoopViewPager mViewPager;
+    InfiniteViewPager mViewPager;
 
-    LoopViewPagerAdapter<Integer> mAdapter;
+    InfiniteViewPager.InfiniteViewPagerAdapter<Integer> mAdapter;
 
     ArrayList<Integer> list = new ArrayList<>();
 
@@ -46,7 +44,7 @@ public class BannerActivity extends BaseActivity {
         urls.add("http://pic.nipic.com/2007-11-09/200711912453162_2.jpg");
         urls.add("http://pic28.nipic.com/20130402/9252150_190139450381_2.jpg");
 
-        mAdapter = new LoopViewPagerAdapter<Integer>(mViewPager, list) {
+        mAdapter = new InfiniteViewPager.InfiniteViewPagerAdapter<Integer>(mViewPager, list) {
             @Override
             public View inflateView(int position, Integer data) {
                 return getLayoutInflater().inflate(R.layout.item, null);
@@ -68,20 +66,16 @@ public class BannerActivity extends BaseActivity {
                 });
             }
         };
-        mViewPager.setAdapter(mAdapter);
-        mViewPager.setScrollSpeed(0.8f);
-        mViewPager.setAutoScroll(true, true , 3000, 2000);
+        mViewPager.setAdapter(mAdapter, true);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        mViewPager.startScroll();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        mViewPager.stopScroll();
     }
 }
