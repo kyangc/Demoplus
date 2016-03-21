@@ -29,6 +29,11 @@
                 android:checkable="true"
                 android:icon="@drawable/ic_gallery"
                 android:title="Fast gallery" />
+            <item
+                android:id="@+id/nest_demo"
+                android:checkable="true"
+                android:icon="@drawable/ic_clock"
+                android:title="Nested Scroll" />
         </menu>
     </item>
 

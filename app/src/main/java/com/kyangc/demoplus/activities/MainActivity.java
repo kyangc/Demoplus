@@ -159,6 +159,9 @@ public class MainActivity extends BaseActivity {
                             case R.id.fast_gallery:
                                 GalleryActivity.start(MainActivity.this);
                                 break;
+                            case R.id.nest_demo:
+                                NestedActivity.start(MainActivity.this);
+                                break;
                             case R.id.about:
                                 i = new Intent(context, AboutActivity.class);
                                 context.startActivity(i);

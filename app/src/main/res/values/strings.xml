@@ -37,5 +37,6 @@
     </string-array>
     <string name="title_activity_large_image">LargeImageActivity</string>
     <string name="title_activity_banner">BannerActivity</string>
+    <string name="title_activity_nested">NestedActivity</string>
 
 </resources>

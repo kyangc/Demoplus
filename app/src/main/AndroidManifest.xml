@@ -65,6 +65,10 @@
         <activity
             android:name=".activities.BannerActivity"
             android:label="@string/title_activity_banner"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name=".activities.NestedActivity"
+            android:label="@string/title_activity_nested"
             android:theme="@style/AppTheme"></activity>
     </application>
 
