@@ -2,4 +2,7 @@ apply plugin: 'java'
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+
+    //Gson
+    compile 'org.immutables:gson:2.1.0.alpha'
 }

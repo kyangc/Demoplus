@@ -52,7 +52,7 @@ public class FrescoLoaderImpl implements IFrescoLoader, IImageLoader {
         int maxDiskCacheSize = Math.min(300 * 1024 * 1024, (int) (availableStorage / 10));
         int smallMaxDiskCacheSize = Math.min(30 * 1024 * 1024, (int) (availableStorage / 30));
 
-        DiskCacheConfig diskCacheConfig = DiskCacheConfig.newBuilder()
+        DiskCacheConfig diskCacheConfig = DiskCacheConfig.newBuilder(context)
                 .setBaseDirectoryPathSupplier(new Supplier<File>() {
                     public File get() {
                         return StorageUtils.getIsSDAvalable() ?
@@ -65,7 +65,7 @@ public class FrescoLoaderImpl implements IFrescoLoader, IImageLoader {
                 .setMaxCacheSizeOnLowDiskSpace(10485760L)
                 .setMaxCacheSizeOnVeryLowDiskSpace(2097152L)
                 .build();
-        DiskCacheConfig smallDiskCacheConfig = DiskCacheConfig.newBuilder()
+        DiskCacheConfig smallDiskCacheConfig = DiskCacheConfig.newBuilder(context)
                 .setBaseDirectoryPathSupplier(new Supplier<File>() {
                     public File get() {
                         return StorageUtils.getIsSDAvalable() ?
